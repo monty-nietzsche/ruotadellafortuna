@@ -28,12 +28,14 @@ qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o
 Ant converte tutto nella forma più appropriata alla piattaforma corrente. I comandi da noi utilizzati per avviare WOF, presenti 
 nel nostro `build.xml`. 
 
-## ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
+# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
 
-There should be a Postgres database named `WOF` running on the localhost at port `5432`. 
+There should be a Postgres database named `WOF` running on the localhost at port `5432`.
+
+## Creating the database tables
+
 The code for creating the table needed for the database is the following:
 ``` sql
-
 CREATE TABLE public.matches (
     idmatch character varying(36) NOT NULL,
     creationtime character varying(10) NOT NULL,
@@ -104,7 +106,114 @@ CREATE TABLE public.users (
 ALTER TABLE ONLY public.phrases ALTER COLUMN idphrase SET DEFAULT nextval('public.phrase_idphrase_seq'::regclass);
 ```
 
-## ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
+## Adding data to the table `phrases`
+
+```sql
+INSERT INTO public.phrases VALUES (1, 'un fenomeno di costume', 'La moda dei bikini');
+INSERT INTO public.phrases VALUES (2, 'il pane di ramerino', 'Specialità toscana');
+INSERT INTO public.phrases VALUES (3, 'magnetofono', 'Un apparecchio');
+INSERT INTO public.phrases VALUES (4, 'anche i chili sono a contratto', 'Al moulin rouge');
+INSERT INTO public.phrases VALUES (5, 'l''uccellino più puntuale', 'Il cucu');
+INSERT INTO public.phrases VALUES (6, 'il pianeta con piu lune', 'Saturno');
+INSERT INTO public.phrases VALUES (7, 'Il diacono', 'è un futuro sacerdote');
+INSERT INTO public.phrases VALUES (8, 'e il simbolo della croce', 'L''albero di natale');
+INSERT INTO public.phrases VALUES (9, 'lo puoi trovare sul canale quarantesei', 'Cartoonito');
+INSERT INTO public.phrases VALUES (10, 'vinsero la loro battaglia grazie alla loro foga', 'Le amazzoni');
+INSERT INTO public.phrases VALUES (11, 'bast era una divinità con la testa da felino ', 'Nell''antico egitto');
+INSERT INTO public.phrases VALUES (12, 'Francamente me ne infischio', 'Via col vento, 1939');
+INSERT INTO public.phrases VALUES (13, 'Via col vento', 'Francamente me ne infischio');
+INSERT INTO public.phrases VALUES (14, 'Il Padrino', 'Gli farò un offerta che non potrà rifiutare');
+INSERT INTO public.phrases VALUES (15, 'Star Wars', 'Che la Forza sia con te');
+INSERT INTO public.phrases VALUES (16, 'Taxi driver', 'Ma dici a me');
+INSERT INTO public.phrases VALUES (17, 'Apocalypse Now', 'Mi piace l odore del napalm al mattino');
+INSERT INTO public.phrases VALUES (18, 'Il mistero del falco', 'La materia di cui sono fatti i sogni');
+INSERT INTO public.phrases VALUES (19, 'Lucio Dalla', 'dice ciao al 900');
+INSERT INTO public.phrases VALUES (20, 'personaggio biblico', 'Giacobbe');
+INSERT INTO public.phrases VALUES (21, 'Stivali geografici', 'italia arabia nuova zelanda');
+INSERT INTO public.phrases VALUES (22, 'nel medioevo', 'niente tv solo giullari e trovatori ');
+INSERT INTO public.phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera');
+```
+
+## Adding users
+
+```sql
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Amminestratore', 'del Gioco', 'admin', 'admin@ruota.it', 'fb8e395602781f95279f897297fa350c');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'tizzio', 'tizio@ruota.it', 'fb8e395602781f95279f897297fa350c');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'caio', 'caio@ruota.it', 'fb8e395602781f95279f897297fa350c');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'sempronio', 'sempronio@ruota.it', 'fb8e395602781f95279f897297fa350c');
+```
+
+## Some foreign key constraints
+
+```sql
+SELECT pg_catalog.setval('public.phrase_idphrase_seq', 1, false);
+
+ALTER TABLE ONLY public.rounds
+    ADD CONSTRAINT round_pkey PRIMARY KEY (idmatch, roundnumber);
+
+ALTER TABLE ONLY public.roundwinners
+    ADD CONSTRAINT roundwinner_pkey PRIMARY KEY (idmatch, roundnumber, player);
+
+ALTER TABLE ONLY public.roundparticipants
+    ADD CONSTRAINT roundparticipants_pkey PRIMARY KEY (idmatch, roundnumber, player);
+
+ALTER TABLE ONLY public.matches
+    ADD CONSTRAINT match_pkey PRIMARY KEY (idmatch);
+
+ALTER TABLE ONLY public.matchwinners
+    ADD CONSTRAINT matchwinner_pkey PRIMARY KEY (idmatch, player);
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT move_pkey PRIMARY KEY (idmove);
+
+ALTER TABLE ONLY public.phrases
+    ADD CONSTRAINT phrase_phrase_key UNIQUE (phrase);
+
+ALTER TABLE ONLY public.phrases
+    ADD CONSTRAINT phrase_pkey PRIMARY KEY (idphrase);
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_nickname_key UNIQUE (nickname);
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (iduser);
+
+ALTER TABLE ONLY public.rounds
+    ADD CONSTRAINT round_idmatch_fkey FOREIGN KEY (idmatch) REFERENCES public.matches(idmatch);
+
+ALTER TABLE ONLY public.rounds
+    ADD CONSTRAINT round_phrase_fkey FOREIGN KEY (phrase) REFERENCES public.phrases(idphrase);
+
+ALTER TABLE ONLY public.roundwinners
+    ADD CONSTRAINT roundwinner_idmatch_fkey FOREIGN KEY (idmatch, roundnumber) REFERENCES public.rounds(idmatch, roundnumber);
+
+ALTER TABLE ONLY public.roundwinners
+    ADD CONSTRAINT roundwinner_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
+
+ALTER TABLE ONLY public.roundparticipants
+    ADD CONSTRAINT roundparticipant_round_fkey FOREIGN KEY (idmatch, roundnumber) REFERENCES public.rounds(idmatch, roundnumber);
+
+ALTER TABLE ONLY public.roundparticipants
+    ADD CONSTRAINT roundparticipant_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
+    
+ALTER TABLE ONLY public.matchwinners
+    ADD CONSTRAINT matchwinner_idmatch_fkey FOREIGN KEY (idmatch) REFERENCES public.matches(idmatch);
+
+ALTER TABLE ONLY public.matchwinners
+    ADD CONSTRAINT matchwinner_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT move_idmatch_fkey FOREIGN KEY (idmatch, roundnumber) REFERENCES public.rounds(idmatch, roundnumber);
+
+ALTER TABLE ONLY public.moves
+    ADD CONSTRAINT move_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
+
+```
+
+# ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
 ```console
 utente@computer:~$ cd rdfProject
 utente@computer:rdfProject$ ant server
