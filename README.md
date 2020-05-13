@@ -155,7 +155,7 @@ utente@computer:rdfProject$ ant server
 
 ### serverRDF
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png" alt="serverRdF" width="400"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png" alt="Create databaseManager" width="400"/>
 
 
 The database credentials:
@@ -166,7 +166,7 @@ The database credentials:
 - port     : `5432`
 
 ### serverGUI
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen2.png" alt="serverRdF" width="400"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen2.png" alt="Create emailManager" width="400"/>
 
 The email credentials:
 - email : `la_ruota_della_fortuna@outlook.it`
@@ -174,7 +174,7 @@ The email credentials:
 
 ### AdminSignIN
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen3.png" alt="serverRdF" width="400"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen3.png" alt="Admin SignIn" width="400"/>
 
 The administrator credentials:
 - email: `admin@ruota.com`
@@ -182,7 +182,7 @@ The administrator credentials:
 
 ### Server Started! 
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen4.png" alt="serverRdF" width="400"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen4.png" alt="Server Running..." width="400"/>
 
 
 ## ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
@@ -196,7 +196,7 @@ utente@computer:rdfProject$ java playerRdF
 ### HostGUI
 The user writes down the address of the remote computer. In our case, it is `localhost`.
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen5.png" alt="serverRdF" width="400"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen5.png" alt="Connect to Host" width="400"/>
 
 ### Utente SignIN
 
@@ -204,21 +204,35 @@ The player `tizio` credentials:
 - email: `tizio@ruota.com`
 - password : `ruota`
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen6.png" alt="serverRdF" width="400"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen6.png" alt="SignIn Player" width="400"/>
 
 ### RDFPlatform: Modulo Utente Giocatore
 
 Once the player is signed in, the RDF platform appears. 
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen7.png" alt="serverRdF" width="600"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen7.png" alt="Game Platform" width="600"/>
 
 ### Modulo schermata di gioco
 
-If the player clicks 'Crea Partita', the game shows.
+If the player clicks 'Crea Partita', the match interface shows.
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen8.png" alt="serverRdF" width="600"/>
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen8.png" alt="MatchInterface" width="600"/>
 
+### Starting a match
 
+Now Tizio has created a match. Use the following credentials to sign in two additional players. In their RDF platform screen, let them click on `+ Giocatore` to join the match created by Tizio.
+
+The player `Caio` credentials:
+- email: `caio@ruota.com`
+- password : `ruota`
+
+The player `Sempronio` credentials:
+- email: `sempronio@ruota.com`
+- password : `ruota`
+
+Once the two players `Caio` and `Sempronio` have joined the match created by `Tizio`, the match interface becomes active and the three players will be able to play.
+
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen9.png" alt="MatchOnGoing" width="600"/>
 
 ## Last Stable Release
 ```python
