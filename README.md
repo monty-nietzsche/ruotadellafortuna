@@ -18,8 +18,6 @@ modo tale da poter avviare il programma a linea di comando, ci siamo rimessi sui
 automation con Ant, riuscendo a far partire il programma tramite questo strumento. Abbiamo utilizzato Ant perché, a nostro avviso,
 ha una gestione complessiva più semplice, anche in fase di portabilità, che ci ha permesso, appunto, di raggiungere l’obiettivo.
 
-<br>
-
 ## Apache Ant
 Apache Ant è un software per l'automazione del processo di build. È simile a make, ma scritto in Java ed è principalmente orientato
 allo sviluppo in Java. Ant è un progetto Apache, open source, ed è distribuito sotto licenza Apache. Esso si basa su script in
@@ -29,7 +27,7 @@ possono avere delle dipendenze da altri target. La sintassi ant lascia libero l'
 qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o :) per i separatori dei path (classpath). 
 Ant converte tutto nella forma più appropriata alla piattaforma corrente. I comandi da noi utilizzati per avviare WOF, presenti 
 nel nostro `build.xml`. 
-<br>
+
 ## ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
 
 There should be a Postgres database named `WOF` running on the localhost at port `5432`. The code for creating the database is the
@@ -106,6 +104,47 @@ CREATE TABLE public.users (
 ALTER TABLE ONLY public.phrases ALTER COLUMN idphrase SET DEFAULT nextval('public.phrase_idphrase_seq'::regclass);
 ```
 
+## ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
+```console
+utente@computer:~$ cd rdfProject
+utente@computer:rdfProject$ ant server
+```
+
+### serverRDF
+
+The database credentials:
+
+- username : `postgres`
+- password : `postgres`
+- hostname : `localhost`
+- port     : `5432`
+
+### serverGUI
+
+The email credentials:
+- email : `la_ruota_della_fortuna@outlook.it`
+- password : `No_reply`
+
+### AdminSignIN
+
+The administrator credentials:
+- email: `admin@ruota.com`
+- password : `password`
+
+## ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
+```bash
+git clone https://github.com/anfederico/Clairvoyant
+```
+
+### HostGUI
+
+### Utente SignIN
+
+### RDFPlatform: Modulo Utente Giocatore
+
+### RDFPlatform: Modulo Utente Amminestratore
+
+### Modulo schermata di gioco
 
 ## Last Stable Release
 ```python
