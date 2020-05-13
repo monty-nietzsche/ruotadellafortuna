@@ -1,13 +1,12 @@
-<img width=12.5% src="https://github.com/anfederico/Clairvoyant/blob/master/media/Logo.png">
-<img width=60% src="https://github.com/anfederico/Clairvoyant/blob/master/media/Clairvoyant.png">
-
+<img style="text-align:center" src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/logo.png" alt="Create databaseManager" width="400"/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![Python](https://img.shields.io/badge/python-v3.6+-blue.svg)
-[![Build Status](https://travis-ci.org/anfederico/Clairvoyant.svg?branch=master)](https://travis-ci.org/anfederico/Clairvoyant)
-![Dependencies](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
-[![GitHub Issues](https://img.shields.io/github/issues/anfederico/Clairvoyant.svg)](https://github.com/anfederico/Clairvoyant/issues)
+
+![Java](https://img.shields.io/badge/java-v8.0-blue.svg)
+![Group work](https://img.shields.io/badge/group%20work-yes-brightgreen.svg)
+![Works online](https://img.shields.io/badge/works%20online-no-red.svg)
+![RMI](https://img.shields.io/badge/rmi%20technology-yes-brightgreen.svg)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 
 ## Panoramica
 
