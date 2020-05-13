@@ -36,7 +36,6 @@ There should be a Postgres database named `WOF` running on the localhost at port
 
 The code for creating the table needed for the database is the following:
 ``` sql
-        
         create table users
         (
             idUser   varchar(36) primary key,
@@ -48,15 +47,12 @@ The code for creating the table needed for the database is the following:
             password varchar     not null
         );
 
-
-
         create table matches
         (
             idMatch varchar(36) primary key,
             creationTime varchar(10) not null,
             creationDate varchar(10) not null
         );
-
 
         create table phrases
         (
@@ -144,10 +140,10 @@ INSERT INTO public.phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera')
 ## Adding users
 
 ```sql
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Amminestratore', 'del Gioco', 'admin', 'admin@ruota.it', 'fb8e395602781f95279f897297fa350c');
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'tizzio', 'tizio@ruota.it', 'fb8e395602781f95279f897297fa350c');
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'caio', 'caio@ruota.it', 'fb8e395602781f95279f897297fa350c');
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'sempronio', 'sempronio@ruota.it', 'fb8e395602781f95279f897297fa350c');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 1, 'Amminestratore', '', 'admin', 'admin@ruota.it', '');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'tizzio', 'tizio@ruota.it', '');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'caio', 'caio@ruota.it', '');
+INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'sempronio','sempronio@ruota.it', '');
 ```
 
 # ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
