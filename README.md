@@ -1,5 +1,5 @@
-<p align="center"><img width=12.5% src="https://github.com/anfederico/Clairvoyant/blob/master/media/Logo.png"></p>
-<p align="center"><img width=60% src="https://github.com/anfederico/Clairvoyant/blob/master/media/Clairvoyant.png"></p>
+<img width=12.5% src="https://github.com/anfederico/Clairvoyant/blob/master/media/Logo.png">
+<img width=60% src="https://github.com/anfederico/Clairvoyant/blob/master/media/Clairvoyant.png">
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![Python](https://img.shields.io/badge/python-v3.6+-blue.svg)
@@ -11,15 +11,101 @@
 
 ## Basic Overview
 
-Using stock historical data, train a supervised learning algorithm with any combination of financial indicators. Rapidly backtest your model for accuracy and simulate investment portfolio performance. 
-<p align="center"><img width=95% src="https://github.com/anfederico/Waldo/blob/master/media/Schematic.png"></p>
+Inizialmente, non avevamo completato in tempo la fase di “build automation”, a causa principalmente dell’inesperienza 
+nell’utilizzo di Maven. Quindi, benchè questa fase non fosse fondamentale, in fase di consegna avevamo specificato che l’esecuzione
+del programma dovesse avvenire attraverso Eclipse. Successivamente, essendo stata data la possibilità di completare questa parte in
+modo tale da poter avviare il programma a linea di comando, ci siamo rimessi sui nostri passi, ed abbiamo sviluppato la build 
+automation con Ant, riuscendo a far partire il programma tramite questo strumento. Abbiamo utilizzato Ant perché, a nostro avviso,
+ha una gestione complessiva più semplice, anche in fase di portabilità, che ci ha permesso, appunto, di raggiungere l’obiettivo.
 
 <br>
 
-## Visualize the Learning Process
-<img src="https://github.com/anfederico/Clairvoyant/blob/master/media/Learning.gif" width=40%>
-
+## Apache Ant
+Apache Ant è un software per l'automazione del processo di build. È simile a make, ma scritto in Java ed è principalmente orientato
+allo sviluppo in Java. Ant è un progetto Apache, open source, ed è distribuito sotto licenza Apache. Esso si basa su script in
+formato xml. Ogni build file definisce un project composto da target in cui sono elencati i task, le istruzioni da eseguire.
+Nel progetto possono essere definite delle properties, coppie nome e valore immodificabili nel resto del progetto. I target 
+possono avere delle dipendenze da altri target. La sintassi ant lascia libero l'autore del codice di usare una convenzione 
+qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o :) per i separatori dei path (classpath). 
+Ant converte tutto nella forma più appropriata alla piattaforma corrente. I comandi da noi utilizzati per avviare WOF, presenti 
+nel nostro `build.xml`. 
 <br>
+## ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
+
+There should be a Postgres database named `WOF` running on the localhost at port `5432`. The code for creating the database is the
+following 
+``` sql
+
+CREATE TABLE public.matches (
+    idmatch character varying(36) NOT NULL,
+    creationtime character varying(10) NOT NULL,
+    creationdate character varying(10) NOT NULL
+);
+
+CREATE TABLE public.matchwinners (
+    idmatch character varying(36) NOT NULL,
+    player character varying(36) NOT NULL,
+    score numeric(6,0) NOT NULL
+);
+
+CREATE TABLE public.moves (
+    idmove character varying(36) NOT NULL,
+    player character varying(36) NOT NULL,
+    movetype character varying(10) NOT NULL,
+    points numeric(6,0) NOT NULL,
+    idmatch character varying(36) NOT NULL,
+    roundnumber numeric(1,0) NOT NULL
+);
+
+CREATE TABLE public.phrases (
+    idphrase integer NOT NULL,
+    phrase character varying(60) NOT NULL,
+    theme character varying(60) NOT NULL
+);
+
+CREATE SEQUENCE public.phrase_idphrase_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.phrase_idphrase_seq OWNED BY public.phrases.idphrase;
+
+CREATE TABLE public.roundparticipants (
+    idmatch character varying(36) NOT NULL,
+    roundnumber numeric(1,0) NOT NULL,
+    player character varying(36) NOT NULL,
+    isobserver boolean NOT NULL
+);
+
+CREATE TABLE public.rounds (
+    roundnumber numeric(1,0) NOT NULL,
+    phrase integer NOT NULL,
+    idmatch character varying(36) NOT NULL
+);
+
+CREATE TABLE public.roundwinners (
+    idmatch character varying(36) NOT NULL,
+    roundnumber numeric(1,0) NOT NULL,
+    player character varying(36) NOT NULL,
+    score numeric(6,0) NOT NULL
+);
+
+CREATE TABLE public.users (
+    iduser character varying(36) NOT NULL,
+    isadmin numeric(1,0) NOT NULL,
+    name character varying(50) NOT NULL,
+    surname character varying(50) NOT NULL,
+    nickname character varying(50) NOT NULL,
+    email character varying(50) NOT NULL,
+    password character varying NOT NULL
+);
+
+ALTER TABLE ONLY public.phrases ALTER COLUMN idphrase SET DEFAULT nextval('public.phrase_idphrase_seq'::regclass);
+```
+
 
 ## Last Stable Release
 ```python
