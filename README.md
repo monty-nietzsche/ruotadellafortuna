@@ -112,6 +112,8 @@ utente@computer:rdfProject$ ant server
 
 ### serverRDF
 
+![serverRDF](https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png)
+
 The database credentials:
 
 - username : `postgres`
