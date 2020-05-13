@@ -36,74 +36,81 @@ There should be a Postgres database named `WOF` running on the localhost at port
 
 The code for creating the table needed for the database is the following:
 ``` sql
-CREATE TABLE public.matches (
-    idmatch character varying(36) NOT NULL,
-    creationtime character varying(10) NOT NULL,
-    creationdate character varying(10) NOT NULL
-);
+        
+        create table users
+        (
+            idUser   varchar(36) primary key,
+            isAdmin  numeric(1)  not null,
+            name     varchar(50) not null,
+            surname  varchar(50) not null,
+            nickname varchar(50) not null unique,
+            email    varchar(50) not null unique,
+            password varchar     not null
+        );
 
-CREATE TABLE public.matchwinners (
-    idmatch character varying(36) NOT NULL,
-    player character varying(36) NOT NULL,
-    score numeric(6,0) NOT NULL
-);
 
-CREATE TABLE public.moves (
-    idmove character varying(36) NOT NULL,
-    player character varying(36) NOT NULL,
-    movetype character varying(10) NOT NULL,
-    points numeric(6,0) NOT NULL,
-    idmatch character varying(36) NOT NULL,
-    roundnumber numeric(1,0) NOT NULL
-);
 
-CREATE TABLE public.phrases (
-    idphrase integer NOT NULL,
-    phrase character varying(60) NOT NULL,
-    theme character varying(60) NOT NULL
-);
+        create table matches
+        (
+            idMatch varchar(36) primary key,
+            creationTime varchar(10) not null,
+            creationDate varchar(10) not null
+        );
 
-CREATE SEQUENCE public.phrase_idphrase_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
-ALTER SEQUENCE public.phrase_idphrase_seq OWNED BY public.phrases.idphrase;
+        create table phrases
+        (
+            idPhrase serial primary key,
+            phrase 	varchar(60) not null unique,
+            theme  	varchar(60) not null
+        );
 
-CREATE TABLE public.roundparticipants (
-    idmatch character varying(36) NOT NULL,
-    roundnumber numeric(1,0) NOT NULL,
-    player character varying(36) NOT NULL,
-    isobserver boolean NOT NULL
-);
+        create table rounds
+        (
+            roundNumber numeric(1) not null,
+            phrase integer references phrases (idPhrase) not null,
+            idMatch varchar(36) references matches (idMatch) not null,
+            primary key (idMatch, roundNumber)
+        );
 
-CREATE TABLE public.rounds (
-    roundnumber numeric(1,0) NOT NULL,
-    phrase integer NOT NULL,
-    idmatch character varying(36) NOT NULL
-);
+        create table moves
+        (
+            idMove   varchar(36) primary key,
+            player   varchar(36) references users (idUser) not null,
+            movetype varchar(10) not null,
+            points  numeric(6)   not null,
+            idMatch varchar(36) not null,
+            roundNumber   numeric(1)  not null,
+            foreign key (idMatch, roundNumber) references rounds
+        );
 
-CREATE TABLE public.roundwinners (
-    idmatch character varying(36) NOT NULL,
-    roundnumber numeric(1,0) NOT NULL,
-    player character varying(36) NOT NULL,
-    score numeric(6,0) NOT NULL
-);
+        create table matchwinners
+        (
+            idMatch  varchar(36) references matches (idMatch) not null,
+            player varchar(36) references users (idUser) not null,
+            score   numeric(6) not null,
+            primary key (idMatch, player)
+        );
 
-CREATE TABLE public.users (
-    iduser character varying(36) NOT NULL,
-    isadmin numeric(1,0) NOT NULL,
-    name character varying(50) NOT NULL,
-    surname character varying(50) NOT NULL,
-    nickname character varying(50) NOT NULL,
-    email character varying(50) NOT NULL,
-    password character varying NOT NULL
-);
+        create table roundwinners
+        (
+            idMatch  varchar(36),
+            roundNumber   numeric(1),
+            player varchar(36) references users (idUser),
+            score  numeric(6) not null,
+            foreign key (idMatch, roundNumber) references rounds,
+            primary key (idMatch, roundNumber, player)
+        );
 
-ALTER TABLE ONLY public.phrases ALTER COLUMN idphrase SET DEFAULT nextval('public.phrase_idphrase_seq'::regclass);
+        create table roundparticipants
+        (
+            idMatch varchar(36),
+            roundNumber   numeric(1),
+            participant varchar(36) references users (idUser),
+            isObserver boolean not null,
+            foreign key (idMatch, roundNumber) references rounds,
+            primary key (idMatch, roundNumber, participant)
+        );
 ```
 
 ## Adding data to the table `phrases`
@@ -141,76 +148,6 @@ INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Amm
 INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'tizzio', 'tizio@ruota.it', 'fb8e395602781f95279f897297fa350c');
 INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'caio', 'caio@ruota.it', 'fb8e395602781f95279f897297fa350c');
 INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'sempronio', 'sempronio@ruota.it', 'fb8e395602781f95279f897297fa350c');
-```
-
-## Some foreign key constraints
-
-```sql
-SELECT pg_catalog.setval('public.phrase_idphrase_seq', 1, false);
-
-ALTER TABLE ONLY public.rounds
-    ADD CONSTRAINT round_pkey PRIMARY KEY (idmatch, roundnumber);
-
-ALTER TABLE ONLY public.roundwinners
-    ADD CONSTRAINT roundwinner_pkey PRIMARY KEY (idmatch, roundnumber, player);
-
-ALTER TABLE ONLY public.roundparticipants
-    ADD CONSTRAINT roundparticipants_pkey PRIMARY KEY (idmatch, roundnumber, player);
-
-ALTER TABLE ONLY public.matches
-    ADD CONSTRAINT match_pkey PRIMARY KEY (idmatch);
-
-ALTER TABLE ONLY public.matchwinners
-    ADD CONSTRAINT matchwinner_pkey PRIMARY KEY (idmatch, player);
-
-ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT move_pkey PRIMARY KEY (idmove);
-
-ALTER TABLE ONLY public.phrases
-    ADD CONSTRAINT phrase_phrase_key UNIQUE (phrase);
-
-ALTER TABLE ONLY public.phrases
-    ADD CONSTRAINT phrase_pkey PRIMARY KEY (idphrase);
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_email_key UNIQUE (email);
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_nickname_key UNIQUE (nickname);
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (iduser);
-
-ALTER TABLE ONLY public.rounds
-    ADD CONSTRAINT round_idmatch_fkey FOREIGN KEY (idmatch) REFERENCES public.matches(idmatch);
-
-ALTER TABLE ONLY public.rounds
-    ADD CONSTRAINT round_phrase_fkey FOREIGN KEY (phrase) REFERENCES public.phrases(idphrase);
-
-ALTER TABLE ONLY public.roundwinners
-    ADD CONSTRAINT roundwinner_idmatch_fkey FOREIGN KEY (idmatch, roundnumber) REFERENCES public.rounds(idmatch, roundnumber);
-
-ALTER TABLE ONLY public.roundwinners
-    ADD CONSTRAINT roundwinner_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
-
-ALTER TABLE ONLY public.roundparticipants
-    ADD CONSTRAINT roundparticipant_round_fkey FOREIGN KEY (idmatch, roundnumber) REFERENCES public.rounds(idmatch, roundnumber);
-
-ALTER TABLE ONLY public.roundparticipants
-    ADD CONSTRAINT roundparticipant_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
-    
-ALTER TABLE ONLY public.matchwinners
-    ADD CONSTRAINT matchwinner_idmatch_fkey FOREIGN KEY (idmatch) REFERENCES public.matches(idmatch);
-
-ALTER TABLE ONLY public.matchwinners
-    ADD CONSTRAINT matchwinner_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
-
-ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT move_idmatch_fkey FOREIGN KEY (idmatch, roundnumber) REFERENCES public.rounds(idmatch, roundnumber);
-
-ALTER TABLE ONLY public.moves
-    ADD CONSTRAINT move_player_fkey FOREIGN KEY (player) REFERENCES public.users(iduser);
-
 ```
 
 # ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
