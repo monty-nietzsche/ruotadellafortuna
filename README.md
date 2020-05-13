@@ -154,7 +154,7 @@ utente@computer:~$ cd rdfProject
 utente@computer:rdfProject$ ant server
 ```
 
-### Connessione al database 
+## Connessione al database 
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png" alt="Create databaseManager" width="400"/>
 
@@ -168,7 +168,7 @@ port            : 5432
 ---------------------------------------------------------
 ```
 
-### Connessione all'indirizzo e-mail del gioco
+## Connessione all'indirizzo e-mail del gioco
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen2.png" alt="Create emailManager" width="400"/>
 
@@ -180,7 +180,7 @@ password        : postgres
 -----------------------------------------------------
 ```
 
-### Accesso amministratore
+## Accesso amministratore
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen3.png" alt="Admin SignIn" width="400"/>
 
@@ -192,7 +192,7 @@ password        : ruota
 -----------------------------------------------------
 ```
 
-### Server avviato!
+## Server avviato!
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen4.png" alt="Server Running..." width="400"/>
 
@@ -242,7 +242,7 @@ Ora Tizio ha creato una partita. Usa le seguenti credenziali per accedere a due 
 ```text
 -------------- Player Caio credentials --------------
 
-email           : tizio@ruota.it
+email           : caio@ruota.it
 password        : ruota
 -----------------------------------------------------
 ```
@@ -251,7 +251,7 @@ password        : ruota
 ```text
 ----------- Player Sempronio credentials ------------
 
-email           : tizio@ruota.it
+email           : sempronio@ruota.it
 password        : ruota
 -----------------------------------------------------
 ```
