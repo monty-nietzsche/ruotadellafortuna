@@ -1,4 +1,4 @@
-<H1 align="center">RUOTA DELLA FORTUNA</p>
+<H1 align="center">RUOTA DELLA FORTUNA</H1>
 
 &nbsp;&nbsp;
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/foundation.icon/icon-sdk/badge.svg)](https://search.maven.org/search?q=g:foundation.icon%20a:icon-sdk)
