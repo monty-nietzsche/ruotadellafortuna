@@ -112,41 +112,42 @@ The code for creating the table needed for the database is the following:
 ## Adding data to the table `phrases`
 
 ```sql
-INSERT INTO public.phrases VALUES (1, 'un fenomeno di costume', 'La moda dei bikini');
-INSERT INTO public.phrases VALUES (2, 'il pane di ramerino', 'Specialità toscana');
-INSERT INTO public.phrases VALUES (3, 'magnetofono', 'Un apparecchio');
-INSERT INTO public.phrases VALUES (4, 'anche i chili sono a contratto', 'Al moulin rouge');
-INSERT INTO public.phrases VALUES (5, 'l''uccellino più puntuale', 'Il cucu');
-INSERT INTO public.phrases VALUES (6, 'il pianeta con piu lune', 'Saturno');
-INSERT INTO public.phrases VALUES (7, 'Il diacono', 'è un futuro sacerdote');
-INSERT INTO public.phrases VALUES (8, 'e il simbolo della croce', 'L''albero di natale');
-INSERT INTO public.phrases VALUES (9, 'lo puoi trovare sul canale quarantesei', 'Cartoonito');
-INSERT INTO public.phrases VALUES (10, 'vinsero la loro battaglia grazie alla loro foga', 'Le amazzoni');
-INSERT INTO public.phrases VALUES (11, 'bast era una divinità con la testa da felino ', 'Nell''antico egitto');
-INSERT INTO public.phrases VALUES (12, 'Francamente me ne infischio', 'Via col vento, 1939');
-INSERT INTO public.phrases VALUES (13, 'Via col vento', 'Francamente me ne infischio');
-INSERT INTO public.phrases VALUES (14, 'Il Padrino', 'Gli farò un offerta che non potrà rifiutare');
-INSERT INTO public.phrases VALUES (15, 'Star Wars', 'Che la Forza sia con te');
-INSERT INTO public.phrases VALUES (16, 'Taxi driver', 'Ma dici a me');
-INSERT INTO public.phrases VALUES (17, 'Apocalypse Now', 'Mi piace l odore del napalm al mattino');
-INSERT INTO public.phrases VALUES (18, 'Il mistero del falco', 'La materia di cui sono fatti i sogni');
-INSERT INTO public.phrases VALUES (19, 'Lucio Dalla', 'dice ciao al 900');
-INSERT INTO public.phrases VALUES (20, 'personaggio biblico', 'Giacobbe');
-INSERT INTO public.phrases VALUES (21, 'Stivali geografici', 'italia arabia nuova zelanda');
-INSERT INTO public.phrases VALUES (22, 'nel medioevo', 'niente tv solo giullari e trovatori ');
-INSERT INTO public.phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera');
+INSERT INTO phrases VALUES (1, 'un fenomeno di costume', 'La moda dei bikini');
+INSERT INTO phrases VALUES (2, 'il pane di ramerino', 'Specialità toscana');
+INSERT INTO phrases VALUES (3, 'magnetofono', 'Un apparecchio');
+INSERT INTO phrases VALUES (4, 'anche i chili sono a contratto', 'Al moulin rouge');
+INSERT INTO phrases VALUES (5, 'l''uccellino più puntuale', 'Il cucu');
+INSERT INTO phrases VALUES (6, 'il pianeta con piu lune', 'Saturno');
+INSERT INTO phrases VALUES (7, 'Il diacono', 'è un futuro sacerdote');
+INSERT INTO phrases VALUES (8, 'e il simbolo della croce', 'L''albero di natale');
+INSERT INTO phrases VALUES (9, 'lo puoi trovare sul canale quarantesei', 'Cartoonito');
+INSERT INTO phrases VALUES (10, 'vinsero la loro battaglia grazie alla loro foga', 'Le amazzoni');
+INSERT INTO phrases VALUES (11, 'bast era una divinità con la testa da felino ', 'Nell''antico egitto');
+INSERT INTO phrases VALUES (12, 'Francamente me ne infischio', 'Via col vento, 1939');
+INSERT INTO phrases VALUES (13, 'Via col vento', 'Francamente me ne infischio');
+INSERT INTO phrases VALUES (14, 'Il Padrino', 'Gli farò un offerta che non potrà rifiutare');
+INSERT INTO phrases VALUES (15, 'Star Wars', 'Che la Forza sia con te');
+INSERT INTO phrases VALUES (16, 'Taxi driver', 'Ma dici a me');
+INSERT INTO phrases VALUES (17, 'Apocalypse Now', 'Mi piace l odore del napalm al mattino');
+INSERT INTO phrases VALUES (18, 'Il mistero del falco', 'La materia di cui sono fatti i sogni');
+INSERT INTO phrases VALUES (19, 'Lucio Dalla', 'dice ciao al 900');
+INSERT INTO phrases VALUES (20, 'personaggio biblico', 'Giacobbe');
+INSERT INTO phrases VALUES (21, 'Stivali geografici', 'italia arabia nuova zelanda');
+INSERT INTO phrases VALUES (22, 'nel medioevo', 'niente tv solo giullari e trovatori ');
+INSERT INTO phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera');
 ```
 
-## Adding users
+## Adding users to the table `users`
 
 ```sql
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 1, 'Amminestratore', '', 'admin', 'admin@ruota.it', '');
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'tizzio', 'tizio@ruota.it', '');
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'caio', 'caio@ruota.it', '');
-INSERT INTO public.users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'sempronio','sempronio@ruota.it', '');
+INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 1, 'Amminestratore', 'del Gioco', 'admin', 'admin@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
+INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'Tizio', 'tizio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
+INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'Caio', 'caio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
+INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'Sempronio', 'sempronio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
 ```
 
 # ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
+
 ```console
 utente@computer:~$ cd rdfProject
 utente@computer:rdfProject$ ant server
@@ -177,7 +178,7 @@ The email credentials:
 
 The administrator credentials:
 - email: `admin@ruota.com`
-- password : `password`
+- password : `ruota`
 
 ### Server Started! 
 
@@ -193,18 +194,31 @@ utente@computer:rdfProject$ java playerRdF
 ```
 
 ### HostGUI
+The user writes down the address of the remote computer. In our case, it is `localhost`.
+
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen5.png" alt="serverRdF" width="400"/>
 
 ### Utente SignIN
+
+The player `tizio` credentials:
+- email: `tizio@ruota.com`
+- password : `ruota`
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen6.png" alt="serverRdF" width="400"/>
 
 ### RDFPlatform: Modulo Utente Giocatore
 
+Once the player is signed in, the RDF platform appears. 
+
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen7.png" alt="serverRdF" width="600"/>
 
 ### Modulo schermata di gioco
+
+If the player clicks 'Crea Partita', the game shows.
+
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen8.png" alt="serverRdF" width="600"/>
+
+
 
 ## Last Stable Release
 ```python
