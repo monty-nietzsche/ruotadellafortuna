@@ -9,7 +9,7 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## Basic Overview
+## Panoramica
 
 Inizialmente, non avevamo completato in tempo la fase di “build automation”, a causa principalmente dell’inesperienza 
 nell’utilizzo di Maven. Quindi, benchè questa fase non fosse fondamentale, in fase di consegna avevamo specificato che l’esecuzione
@@ -30,11 +30,12 @@ nel nostro `build.xml`.
 
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
 
-There should be a Postgres database named `WOF` running on the localhost at port `5432`.
+Dovrebbe esserci un database Postgres chiamato in `WOF` esecuzione sul localhost alla porta `5432`.
 
-## Creating the database tables
+## Creazione delle tabelle del database
 
-The code for creating the table needed for the database is the following:
+Il codice per la creazione della tabella necessaria per il database è il seguente:
+
 ``` sql
         create table users
         (
@@ -109,7 +110,7 @@ The code for creating the table needed for the database is the following:
         );
 ```
 
-## Adding data to the table `phrases`
+## Aggiunta di dati alla tabella `phrases`
 
 ```sql
 INSERT INTO phrases VALUES (1, 'un fenomeno di costume', 'La moda dei bikini');
@@ -137,7 +138,7 @@ INSERT INTO phrases VALUES (22, 'nel medioevo', 'niente tv solo giullari e trova
 INSERT INTO phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera');
 ```
 
-## Adding users to the table `users`
+## Aggiunta di utenti alla tabella `users`
 
 ```sql
 INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 1, 'Amminestratore', 'del Gioco', 'admin', 'admin@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
@@ -153,7 +154,7 @@ utente@computer:~$ cd rdfProject
 utente@computer:rdfProject$ ant server
 ```
 
-### serverRDF
+### Connessione al database 
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png" alt="Create databaseManager" width="400"/>
 
@@ -167,7 +168,8 @@ port            : 5432
 ---------------------------------------------------------
 ```
 
-### serverGUI
+### Connessione all'indirizzo e-mail del gioco
+
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen2.png" alt="Create emailManager" width="400"/>
 
 ```text
@@ -178,7 +180,7 @@ password        : postgres
 -----------------------------------------------------
 ```
 
-### AdminSignIN
+### Accesso amministratore
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen3.png" alt="Admin SignIn" width="400"/>
 
@@ -190,12 +192,12 @@ password        : ruota
 -----------------------------------------------------
 ```
 
-### Server Started! 
+### Server avviato!
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen4.png" alt="Server Running..." width="400"/>
 
 
-## ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
+# ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
 
 ```console
 utente@computer:~$ cd rdfProject
@@ -203,12 +205,13 @@ utente@computer:rdfProject$ javac playerRdF.java
 utente@computer:rdfProject$ java playerRdF
 ```
 
-### HostGUI
-The user writes down the address of the remote computer. In our case, it is `localhost`.
+## Connessione all'host remoto
+
+L'utente annota l'indirizzo del computer remoto. Nel nostro caso, lo è `localhost`.
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen5.png" alt="Connect to Host" width="400"/>
 
-### Utente SignIN
+## Accesso giocatore
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen6.png" alt="SignIn Player" width="400"/>
 
@@ -220,21 +223,21 @@ password        : ruota
 -----------------------------------------------------
 ```
 
-### RDFPlatform: Modulo Utente Giocatore
+## Piattaforma di gioco
 
-Once the player is signed in, the RDF platform appears. 
+Una volta effettuato l'accesso, viene visualizzata la piattaforma RdFPlatform.
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen7.png" alt="Game Platform" width="600"/>
 
-### Modulo schermata di gioco
+## Schermata di gioco
 
-If the player clicks 'Crea Partita', the match interface shows.
+Se il giocatore fa clic su `Crea Partita`, viene visualizzata la schermata di gioco.
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen8.png" alt="MatchInterface" width="600"/>
 
-### Starting a match
+## Iniziare una partita
 
-Now Tizio has created a match. Use the following credentials to sign in two additional players. In their RDF platform screen, let them click on `+ Giocatore` to join the match created by Tizio.
+Ora Tizio ha creato una partita. Usa le seguenti credenziali per accedere a due giocatori aggiuntivi. Nella schermata della piattaforma RDF, fai clic su `+Giocatore` per unirsi alla partita creata da Tizio.
 
 ```text
 -------------- Player Caio credentials --------------
@@ -253,11 +256,11 @@ password        : ruota
 -----------------------------------------------------
 ```
 
-Once the two players `Caio` and `Sempronio` have joined the match created by `Tizio`, the match interface becomes active and the three players will be able to play.
+Una volta che i due giocatori `Caio` e `Sempronio` sono iscritti alla partita creata da Tizio, l'interfaccia partita diventa attivo ed i tre giocatori saranno in grado di giocare.
 
 <img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen9.png" alt="MatchOnGoing" width="600"/>
 
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Contributions
-The current project has been done by the following team:
+L'attuale progetto è stato realizzato dal seguente team:
 - Project Manager : Mohamed Ghachem
-- Team members    : Guilio Delia; Lorris Bruno and Gabriele Sbrò
+- Team            : Guilio Delia; Lorris Bruno and Gabriele Sbrò
