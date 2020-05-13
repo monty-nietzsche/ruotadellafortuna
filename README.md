@@ -30,8 +30,8 @@ nel nostro `build.xml`.
 
 ## ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
 
-There should be a Postgres database named `WOF` running on the localhost at port `5432`. The code for creating the database is the
-following 
+There should be a Postgres database named `WOF` running on the localhost at port `5432`. 
+The code for creating the table needed for the database is the following:
 ``` sql
 
 CREATE TABLE public.matches (
