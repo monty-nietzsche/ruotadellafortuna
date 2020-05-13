@@ -112,8 +112,7 @@ utente@computer:rdfProject$ ant server
 
 ### serverRDF
 
-![serverRDF](https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png)
-
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png" alt="serverRdF" width="400"/>
 The database credentials:
 
 - username : `postgres`
@@ -122,6 +121,7 @@ The database credentials:
 - port     : `5432`
 
 ### serverGUI
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen2.png" alt="serverRdF" width="400"/>
 
 The email credentials:
 - email : `la_ruota_della_fortuna@outlook.it`
@@ -129,24 +129,38 @@ The email credentials:
 
 ### AdminSignIN
 
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen3.png" alt="serverRdF" width="400"/>
+
 The administrator credentials:
 - email: `admin@ruota.com`
 - password : `password`
 
+### Server Started! 
+
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen4.png" alt="serverRdF" width="400"/>
+
+
 ## ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
-```bash
-git clone https://github.com/anfederico/Clairvoyant
+
+```console
+utente@computer:~$ cd rdfProject
+utente@computer:rdfProject$ javac playerRdF.java
+utente@computer:rdfProject$ java playerRdF
 ```
 
 ### HostGUI
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen5.png" alt="serverRdF" width="400"/>
 
 ### Utente SignIN
 
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen6.png" alt="serverRdF" width="400"/>
+
 ### RDFPlatform: Modulo Utente Giocatore
 
-### RDFPlatform: Modulo Utente Amminestratore
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen7.png" alt="serverRdF" width="600"/>
 
 ### Modulo schermata di gioco
+<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen8.png" alt="serverRdF" width="600"/>
 
 ## Last Stable Release
 ```python
