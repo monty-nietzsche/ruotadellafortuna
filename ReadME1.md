@@ -38,10 +38,7 @@ LocateRegistry.createRegistry(port)
 
 ### Create the stub (remote reference to your object)
 
-We do not let  our object 'Server' extend UnicastRemoteObject(), just that the interface of the remote object should extend Remote.
-UnicastRemoteObject exports the remote object to a random port and we would like to control which port the remote object is
-exported to. We do this for reasons that we will detail later in the document.
-
+Our object 'server' should extend the class `UnicastRemoteObject`.
 ```ruby
 	Public Class serverInterface extends Remote() {
 		...
@@ -140,25 +137,33 @@ The full code on the client side:
 ## Sending the callback remote reference (Client listener)
 
 The update of the user graphical interface relies on the object `ClientManager`, which is an object created by the client.
-A remote reference of local `ClientManager` object is, then, sent to the server, which uses it to invoke methods in the original object
-stored in the client machine. For example, the server might want to inform players that a player has left the game. When the event
-occurs, the server objects can call a method on the proxy objects of the `ClientManager` object for each player in the match. It does so
-by calling `stubClient.Notifyleaver()`. The method will then be automatically transferred to the original `ClientManager` object,
-which will show a notification on the client machine. So that the clientstub can trace its way back to the original object, it
-needs to have two pieces of information `host` and `port`. You can see here an example of clientstub.
+
+### Local reference vs remote reference
+
+When the class `ControlManager` extends the class `UnicastRemoteObject`; creating an object `ClientManager` returns a remote reference that can be used both by the client machine and the server machine. When this is done locally, it is not problem since the calls are directed towards 'localhost'. When we deloy the application on Internet, we do not want that objects on the client machine have to go out to the Internet, fetch the IP address and the port, just to go back to the local machine and access a local object. This is why we separate the local reference to the object from the remote reference of the object. We do not let the class 'ClientManager' extend `UnicastRemoteObject()`, just that its interface should extend `Remote`.
+
+We will create remote reference to the local object `ClientManager` called `stubClient`and send it to the server, which uses it to invoke methods in the original object stored in the client machine. The objects on the local machine will use the local reference by taking as argument the local object itself.
+
+To see the difference, this is a local reference of the local object `ClientManager` is:
+```ruby
+services.ClientManager@1b7e8193
+```
+while the remote reference of the same object is:
 ```ruby
 Proxy[ClientManagerInterface,RemoteObjectInvocationHandler[UnicastRef [liveRef: [endpoint:[85.230.100.168:2020](remote),objID:[1efd7e30:172140d00e2:-7ffe, 6986137974138417350]]]]]
 ```
+The local reference will be used by objects on the local machine; while the remote reference will be send to the server machine. Calls to the proxy object will be automatically transferred to the original local object `ClientManager`.
 
-In the endpoint, you can see `endpoint:[85.230.100.168:2020](remote)`. The `85.230.100.168` is the public IP address (**that can be used to access the machine from the Internet and not an local IP given by the router**) and `2020` is the port at which the original object 
-'ClientManager' lies. 
+### Setting RMI hostname
+
+In the remote reference above, you can see `endpoint:[85.230.100.168:2020](remote)`. The `85.230.100.168` is the public IP address (**that can be used to access the machine from the Internet and not an local IP given by the router**) and `2020` is the port at which the original object 'ClientManager' lies. 
 
 The host is again the public IP of the client machine and the port is any port we choose, provided that the server machine accepts TCP transmission on it (the port is open). Since the client machine has a unique public IP address under one session, we can set the host address to be used by all remote reference sent by the client machine; we do this by setting the variable `java.rmi.server.hostname` equal to the public IP address. Once this is done, all exported remote references will have the same IP address as their `host` property. 
 ```ruby
 	System.setProperty("java.rmi.server.hostname", "85.230.100.168");
 ```
 
-This has to be set before (preferably long before) attempting to export the object. Once the rmi server hostname is fixed; we create the clientstub, i.e., the remote reference to the local object 'ClientManager' in the client machine on the port `2020`.
+This has to be set before (preferably long before) attempting to export the object. Once the rmi server hostname is fixed; we create the clientstub called `stubClient`, i.e., the remote reference to the local object 'ClientManager' in the client machine on the port `2020`.
 ```ruby
 	client = new ClientManager();
 	stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, 2020);
@@ -166,19 +171,22 @@ This has to be set before (preferably long before) attempting to export the obje
 
 Now, the stubclient is ready to be sent to the server as an argument of a method call of the object 'server'. Once the `stubclient` is on the server machine, it can be called and the stub will forward all method calls to the original object. For example, we sent the `stubClient` to the server by calling the method `server.creatematch(stubClient)`. 
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Sending a remote reference from the server to the client
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+## Sending a remote reference from the server to the client
 
+### Setting the RMI hostname 
 It is very similar to sending the callback remote reference. Before exporting any local object, we need to specify the host value that
 the remote reference will have. We do this by setting the server hostname for the RMI to the public IP address of the server machine:
+```ruby
+	System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+```
 
-System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+One remote reference that the server needs to transfer to the client machines is the remote reference to the object `match`. The object `match` runs all aspects of the game itself; but it is, at the same time, shared by all players that play the game (as well as observers). To be sure that all players modify the state of the same match (the same `Match` object); they all shall receive a remote reference to the same object 'Match'. The creation of the remote reference for the object `match` is done through the instantiation of the class `Match`. Since the class `Match` extends `UnicastRemoteObject`, it automatically creates a remote reference to it.
 
-One remote reference that the server needs to transfer to the client machines is the remote reference to the object match. The object 'match' runs all aspects of the game itself; but it is at the same time shared by all players that play the game (as well as observers). To be sure that all players modify the state of the same match (the same 'Match' object); they all shall receive a remote reference to the same object 'Match'. The export port can be of your choosing. The creation of match stub is as follows:
+```ruby
+
 
 	match = new Match();
-	stubMatch = (Match)UnicastRemoteObject.exportObject(match, 999);
+```
 
 While the remote references from the client to the server are sent as method arguements, the remote references send from the server to the client as return values. 
 
