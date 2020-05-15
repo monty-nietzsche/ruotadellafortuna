@@ -183,64 +183,101 @@ the remote reference will have. We do this by setting the server hostname for th
 One remote reference that the server needs to transfer to the client machines is the remote reference to the object `match`. The object `match` runs all aspects of the game itself; but it is, at the same time, shared by all players that play the game (as well as observers). To be sure that all players modify the state of the same match (the same `Match` object); they all shall receive a remote reference to the same object 'Match'. The creation of the remote reference for the object `match` is done through the instantiation of the class `Match`. Since the class `Match` extends `UnicastRemoteObject`, it automatically creates a remote reference to it.
 
 ```ruby
-
-
+	public interface RemoteMatch extends Remote {
+		...
+	}
+	
+	public class Match extends UnicastRemoteObject implements RemoteMatch {
+		...
+	}
+	
 	match = new Match();
 ```
+The remote reference of the match looks like this:
+```ruby
+	Match[UnicastServerRef [liveRef: [endpoint:[192.168.1.123:62791](local),objID:[-74ba1f08:17218b707bb:-7ff4, -118223242358496863]]]]
+```
+# Exchange between the server and the client:
 
 While the remote references from the client to the server are sent as method arguements, the remote references send from the server to the client as return values. 
 
-For example; a simplification of our code is:
+ simplification of our code is:
 
-Client Side:
+__Client Side__
+
+First, the ClientManager object `client` is created.
+```ruby
 	client = new ClientManager();
 	stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, 2020);
+	...
+```
+Second, the remote reference `stubclient` is sent to the server as an argument of a remote method call. For example, when a player creates a match, the client is sent to the server using the method `server.createMatch(stubclient)`.
+```ruby
 	server.createMatch(stubclient);
+```
 
-Server Side:
+__Server Side__
+
+The server receives the method call and forwards it to the method `createMatch` of `MatchManager`. This method instantiates the class `Match`and sends the remote refernce of the created object back to the client.
+```ruby
 	public Match createMatch(clientManagerInterface client) {
 		match = new Match();
 		match.addplayer(client);
-		stubMatch = (Match)UnicastRemoteObject.exportObject(match, 999);
-		return stubMatch;
+		return Match;
 	}
+```
 
-We can see here, how the client and the server have exchanged remote references. The match will be responsible in managing the game while the client will be responsible for updating the user interface. 
+__We can see here, how the client and the server have exchanged remote references. The match will be responsible in managing the game while the client will be responsible for updating the user interface.__**
 	
-.....................................................................................................................................................................................
-Playing the Game Online
-......................................................................................................................................................................................
+# Playing the game online:
 
-+ Access of the server on Amazon Web Services
------------------------------------------------------
+## Access of the server on Amazon Web Services
+
 Both the server and the database are hosted at Amazon Web services. The IP address of the server as well as the credentials
-of the database are included in the runnable JAR client so you should not worry about them. Since the server machine on AWS has a public IP address, sending the object 'match' as a 'matchstub' shall not be any problem. However, the 'clientstub' sent from the client machine to the server could be problematic if the client machine accesses Internet behind a router. For this, the client user should make a port forwarding. The application 'ruota' detects if the client user is behind a router and gives him all details needed to make the port forwarding on the router. 
+of the database are included in the runnable JAR client so you should not worry about them. Since the server machine on AWS has a public IP address, sending the remote reference of an object of type 'Match' shall not cause any problem. However, the remote reference 'stubClient' sent from the client machine to the server could be problematic if the client machine accesses Internet behind a router. For this, the client user should make a port forwarding. The application 'ruota' detects if the client user is behind a router and gives him all details needed to make the port forwarding on the router. 
 
 
-+ Access of Game from behind a router.
------------------------------------------------------
-Many machines access Internet through a router so they are assigned IP by the router. This IP, however, does not allow them to receive traffic from the internet. For example, if a machine gets an IP address from the router '168.192.1.100', then trying to access this address from the Internet will fail. For example, if you try to host the game server on this machine, and you give that IP address to your clients so that they connect to the registry; they will get a timeout error because the client will not be able to find the machine having that address. The address is local. There is, however, a public address that might lead to your machine, which is the public IP address of the router. However, if you give that address instead to your clients, they will too have a timeout error since the client machines will be trying to find the registry on the router. The router would not know what to do with the request at the port 1099... unless we tell him what to do. This is called port forwarding. We will basically tell the router to direct all traffic coming to the public address at the port 1099 to your machine identified by its local IP address. Most routers have port forwarding capabilities so connect to your router and make the proper port forwarding. In this case, you will be able to receive client requests as a server at the port 1099; or receive server callbacks as a client at the port 2020. 
+## RMI and port forwarding  - Access of Game from behind a router
 
-The current version of our RuotaDellaFortuna client instructs the client user which port to forward in order to be able to play the game published online. It does it this way:
+Many machines access Internet through a router so they are assigned IP by the router. This IP, however, does not allow them to receive traffic from the internet. For example, if a machine gets an IP address from the router `168.192.1.100`, then trying to access this address from the Internet will fail. For example, if you try to host the game server on this machine, and you give that IP address to your clients so that they connect to the registry; they will get a timeout error because the client will not be able to find the machine having that address. The address is local. There is, however, a public IP address that might lead to your machine, which is the public IP address of the router. However, if you give that address instead to your clients, they will too have a timeout error since the client machines will be trying to find the registry on the router. The router would not know what to do with the request at the port 1099... unless you tell him what to do. This is called port forwarding. We will basically tell the router to direct all traffic coming to the public address at the port 1099 to your machine identified by its local IP address. Most routers have port forwarding capabilities so connect to your router and make the proper port forwarding. In this case, you will be able to receive client requests as a server at the port 1099; or receive server callbacks as a client at the port 2020. 
+
+## Port forwarding and RuotaDellaFortuna application.
+
+The current version of our RuotaDellaFortuna application instructs the client user which port to forward in order to be able to play the game published online. It does it this way:
  
 - First find public IP (use code from amazon to find public IP)
 - Find Local IP using InetAddress 
 - Compare both to see if there is a router.
-- Assign a port to the exported callback stub clientManager randomly from 2000 and 2099.
-- Show the port to Client and say that the client should do port forwarding on the router in order to be able to access the game.
-All calls to the port 2000 should be forwarded to the local IP address at the port 2000.
+- Assign a port to the exported callback stub clientManager randomly from `2000` and `2099`.
+- Show the port to Client and say that the client should do port forwarding on the router in order to be able to access the game. For example, all TCP calls to the port 2000 should be forwarded to the local IP address at the port 2000.
 
-Assume that the public IP address is '12.12.33.232' and the local IP address '192.168.1.190'. The client would realize that it is behind a router.
-(0) The client picks a port between 2000 and 2099 say '2200'.
-port = rnd():
+### Example
+
+Assume that the public IP address is `85.230.100.168` and the local IP address `192.168.1.190`. The application will then realize that your client machine accesses Internet behind a router.
+(0) The client picks a port between `2000` and `2099` say `2043`.
+```ruby
+	port = rnd():
+```
 (1) It will set first it RMI server hostname to the public IP address:
-System.setProperty("java.rmi.server.hostname", "85.230.100.168");
-(2) It exports the clientstub at the port 2200
-client = new ClientManager();
-stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, port);
+```ruby
+	System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+```
+(2) It exports the stub of the object `ClientManager` at the port `2043`
+
+It will create a local object `client`, an instance of the class `ClientManager`and create a remote reference for it at the port `2043`.
+```ruby
+	client = new ClientManager();
+	stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, port);
+```
 
 It will then show the client user a message so it makes the following port forwarding:
-<service name><PortRange><LocalIP><Port><Protocol>
-<Ruota Client><2200><192.168.1.190><2200><TCP>
+```text
+---------------------------------------------------------------------------------
+| Service name	|   PortRange	|    LocalIP	|     Port	|    Protocol	|
+---------------------------------------------------------------------------------
+|  Ruota Client	|     2043	| 192.168.1.190	|     2043	|      TCP	|
+---------------------------------------------------------------------------------
+```
+If the user makes the aforementioned port forwarding modification on the administrative panel of the router, (s)he should be able to access the game at the Amazon Web Services server. 
+Have FUN!
 
-If the user makes the aforementioned port forwarding modification, (s)he should be able to access the game at the Amazon Web Services server. 
