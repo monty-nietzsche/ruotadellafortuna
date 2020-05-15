@@ -43,95 +43,114 @@ UnicastRemoteObject exports the remote object to a random port and we would like
 exported to. We do this for reasons that we will detail later in the document.
 
 ```ruby
-Public Class serverInterface extends Remote() {
-}
+	Public Class serverInterface extends Remote() {
+		...
+	}
 ```
 
-After creating the registry, we export the server object i.e. we create a remote reference to it. We call it 'stubserver'.
+After creating the registry, we export the server object i.e. we create a remote reference to it. We call it `stubserver`.
 
 ```ruby
-ServerInterface stubServer = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
+	ServerInterface stubServer = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
 ```
 
-The reference contains two identifications of the server object i.e. the host and the port. Printing the stubServer in the console gives:
+The reference contains two identifications of the server object i.e. the host and the port. Printing the `stubServer` in the console gives:
 
 ```ruby
-Proxy[ServerInterface,RemoteObjectInvocationHandler[UnicastRef [liveRef: [endpoint:[192.168.1.99:1099](local),objID:[-6b787b94:172184911d0:-7fff, -5728301903043910429]]]]]
+	Proxy[ServerInterface,RemoteObjectInvocationHandler[UnicastRef [liveRef: [endpoint:[192.168.1.99:1099](local),objID:	[-6b787b94:172184911d0:-7fff, -5728301903043910429]]]]]
 ```
 
-Here the host is the (local) IP address of the server machine (`192.168.1.99`) and the port is the port at which the object server is accessible (`1099`). 
+Here the host is the (local) IP address of the server machine `192.168.1.99` and the port is the port at which the object server is accessible `1099`. 
 
-The host might not be very important in the case of the stubserver because it will not travel between machines but for other objects
-we will see it is very important. To see this, when a remote reference of an object, say 'Match' is sent from the server to the client as a    return value. Once the remote reference stubMatch is received on the client, any invocation of a method of stubMatch will be transferred to the original object 'Match'. How does 'stubMatch' traces back the original object? It is through the host and the port. 
+
+**The host might not be very important in the case of the stubserver because it will not travel between machines but for other objects
+we will see it is very important**. To see this, when a remote reference of an object, say 'Match' is sent from the server to the client as a    return value. Once the remote reference stubMatch is received on the client, any invocation of a method of stubMatch will be transferred to the original object 'Match'. How does 'stubMatch' traces back the original object? It is through __the host__ and __the port__. 
 
 ### Binding the server stub to the registry
 After the object server is exported, i.e., the remote reference 'stubServer' is created, it is time to bind it to the registry and give a name that the client will use to look it up. The name we have chosen it "SERVER".
+```ruby
+	register.rebind("SERVER", stubServer);
 ```
-	register.rebind("SERVER", stub);
+
+### Full Code
 
 The full code for the creation and binding of the server is:
-    	System.setProperty("java.security.policy","file:/C:/Users/Monty/Documents/Dropbox/security.policy");
-    	System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+```ruby
+	System.setProperty("java.security.policy","file:/C:/Users/user/Documents/security.policy");
     	
-    	System.out.println(System.getProperty("java.rmi.server.hostname"));
-	    if (System.getSecurityManager() == null) {
-	    	System.setSecurityManager(new SecurityManager());
-	    }
-	    ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
-		register = LocateRegistry.createRegistry(1099);
-		register.rebind("SERVER", stub);
+    	if (System.getSecurityManager() == null) {
+		System.setSecurityManager(new SecurityManager());
+    	}
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Accessing the SERVER from a client machine
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    	ServerInterface stubServer = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
+	register = LocateRegistry.createRegistry(1099);
+	register.rebind("SERVER", stubServer);
+```
 
-.......................................................................
-Security files
-......................................................................
-The client too needs to have security policy file. We use the same file above 'security.policy'.
-System.setProperty("java.security.policy","file:/Users/MG/Desktop/security.sec");
-if (System.getSecurityManager() == null) {
-	System.setSecurityManager(new SecurityManager());
-}
-PS: You might not need to have these policies if you run your program locally (on localhost). However, there are very important
+## Accessing the SERVER from a client machine
+
+### Security files 
+
+The client, too, needs to have security policy file. We use the same file above 'security.policy'.
+```
+	if (System.getSecurityManager() == null) {
+		System.setSecurityManager(new SecurityManager());
+	}
+	System.setProperty("java.security.policy","file:/C:/Users/user/Documents/security.policy");
+```
+
+__PS__: You might not need to have these policies if you run your program locally (on localhost). However, there are very important
 if you run it over the internet.
 
-.......................................................................................
-Locate the registry and find the server STUB
-------------------------------------------------------
-So that the client finds the registry on the server machine, it needs the public IP address of the server machine. If the server machine has a public IP address then it is the address that we are looking for. If, however, the server machine accesses Internet through the router, then its IP address is different from its public IP address. To set your server when you are behind a router, please see below 'RMI and port forwarding'. Assume that the server has a public IP address '3.17.23.19'. We then need to search for the remote registry at that host address and at the port 1099. We do that using the command registry.getregistry()
-			host = '3.17.23.19';
-			registry = LocateRegistry.getRegistry(host, 1099);
-Once we have found the registry, we just need to look up for the server remote reference serverstub, for which we have given the name "SERVER' above. We do this using:
-			server = (ServerInterface) registry.lookup("SERVER");
+### Locate the registry on the server machine
 
-Now the client can interact with the server side using the methods of the object server. It is important to remind the reader that the client has an idea about the methods of the remote object 'server' because it has the interface of the object server. 
+So that the client finds the registry on the server machine, it needs the public IP address of the server machine. If the server machine has a __public IP address__ ,then it is the address that we are looking for. If, however, the server machine accesses Internet through the router, then its IP address is different from its public IP address. To set your server when you are behind a router, please see below 'RMI and port forwarding'. 
 
+Assume that the server has a public IP address `3.17.23.19`. We then need to search for the remote registry at that host address and at the port `1099`. We do that using the command `registry.getregistry()`.
+
+```ruby
+	host = '3.17.23.19';
+	registry = LocateRegistry.getRegistry(host, 1099);
+```
+
+### Find the remote reference stubServer
+
+Once we have found the registry, we just need to look up for the server remote reference `stubServer`, for which we have given the name "SERVER' above. 
+```ruby
+	server = (ServerInterface) registry.lookup("SERVER");
+```
+__Note__ that we look for the name `SERVER` on the registry. It is the name that we have given to the reference `stubServer` when we bound it to the registry. Recall:
+```ruby
+	register.rebind("SERVER", stubServer);
+```
+
+__Important__:Now, the client can interact with the server side using the methods of the object server. It is important to remind the reader that the client has an idea about the methods of the remote object 'server' because it has the interface of the object server. 
+
+### Full Code
 The full code on the client side:
-System.setProperty("java.security.policy","file:/Users/MG/Desktop/security.sec");
-if (System.getSecurityManager() == null) {
-	System.setSecurityManager(new SecurityManager());
-}
-host = '3.17.23.19';
-registry = LocateRegistry.getRegistry(host, 1099);
-server = (ServerInterface) registry.lookup("SERVER");
+```ruby
+	System.setProperty("java.security.policy","file:/Users/MG/Desktop/security.sec");
+	if (System.getSecurityManager() == null) {
+		System.setSecurityManager(new SecurityManager());
+	}
+	host = '3.17.23.19';
+	registry = LocateRegistry.getRegistry(host, 1099);
+	server = (ServerInterface) registry.lookup("SERVER");
+```
+## Sending the callback remote reference (Client listener)
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Sending the callback remote reference
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-The update of the user graphical interface relies on the object clientManager, which is an object created by the client.
-A remote reference of 'ClientManager' is then sent to the server, which uses it to invoke methods in the original object
-stored in the client. For example, the server might want to inform players that a player has left the game. When the event
-occurs, the server objects can call a method on the clientStubs of the client object for each players in the match. It does so
-by calling clientstub.Notifyleaver(). The method will then be automatically transferred to the original ClientManager object,
+The update of the user graphical interface relies on the object `ClientManager`, which is an object created by the client.
+A remote reference of local `ClientManager` object is, then, sent to the server, which uses it to invoke methods in the original object
+stored in the client machine. For example, the server might want to inform players that a player has left the game. When the event
+occurs, the server objects can call a method on the proxy objects of the `ClientManager` object for each player in the match. It does so
+by calling `stubClient.Notifyleaver()`. The method will then be automatically transferred to the original `ClientManager` object,
 which will show a notification on the client machine. So that the clientstub can trace its way back to the original object, it
-needs to have two pieces of information 'host' and 'port'. You can see here an example of clientstub.
-
+needs to have two pieces of information `host` and `port`. You can see here an example of clientstub.
+```ruby
 Proxy[ClientManagerInterface,RemoteObjectInvocationHandler[UnicastRef [liveRef: [endpoint:[85.230.100.168:2020](remote),objID:[1efd7e30:172140d00e2:-7ffe, 6986137974138417350]]]]]
+```
 
-In the endpoint, you can see 'endpoint:[85.230.100.168:2020](remote)'. The '' is the public IP address (that can be used to access
-the machine from the Internet and not an local IP given by the router') and '2020' is the port at which the original object 
+In the endpoint, you can see 'endpoint:[85.230.100.168:2020](remote)'. The `85.230.100.168` is the public IP address (**that can be used to access the machine from the Internet and not an local IP given by the router**) and `2020` is the port at which the original object 
 'ClientManager' lies. 
 
 The host is again the public IP of the client machine and the port is any port we choose, provided that the server machine accepts TCP transmission on it. Since the client machine has a unique public IP address under one session, we can set the host address to be used
