@@ -8,258 +8,190 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 
 
-## Panoramica
+# Publishing ruotaDellaFortuna on Amazon Web Services
 
-Inizialmente, non avevamo completato in tempo la fase di “build automation”, a causa principalmente dell’inesperienza 
-nell’utilizzo di Maven. Quindi, benchè questa fase non fosse fondamentale, in fase di consegna avevamo specificato che l’esecuzione
-del programma dovesse avvenire attraverso Eclipse. Successivamente, essendo stata data la possibilità di completare questa parte in
-modo tale da poter avviare il programma a linea di comando, ci siamo rimessi sui nostri passi, ed abbiamo sviluppato la build 
-automation con Ant, riuscendo a far partire il programma tramite questo strumento. Abbiamo utilizzato Ant perché, a nostro avviso,
-ha una gestione complessiva più semplice, anche in fase di portabilità, che ci ha permesso, appunto, di raggiungere l’obiettivo.
 
-## Apache Ant
-Apache Ant è un software per l'automazione del processo di build. È simile a make, ma scritto in Java ed è principalmente orientato
-allo sviluppo in Java. Ant è un progetto Apache, open source, ed è distribuito sotto licenza Apache. Esso si basa su script in
-formato xml. Ogni build file definisce un project composto da target in cui sono elencati i task, le istruzioni da eseguire.
-Nel progetto possono essere definite delle properties, coppie nome e valore immodificabili nel resto del progetto. I target 
-possono avere delle dipendenze da altri target. La sintassi ant lascia libero l'autore del codice di usare una convenzione 
-qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o :) per i separatori dei path (classpath). 
-Ant converte tutto nella forma più appropriata alla piattaforma corrente. I comandi da noi utilizzati per avviare WOF, presenti 
-nel nostro `build.xml`. 
+## Security files 
+So that the transfer of the remote references happens without any problems, we need to create security policy files to give
+permissions for remote referencing. We opened an empty text file and wrote the following:
+```java
+grant {
+    permission java.security.AllPermission;
+};
+```
+and saved under the name 'security.policy'. 
 
-# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
-
-Dovrebbe esserci un database Postgres chiamato in `WOF` esecuzione sul localhost alla porta `5432`.
-
-## Creazione delle tabelle del database
-
-Il codice per la creazione della tabella necessaria per il database è il seguente:
-
-``` sql
-        create table users
-        (
-            idUser   varchar(36) primary key,
-            isAdmin  numeric(1)  not null,
-            name     varchar(50) not null,
-            surname  varchar(50) not null,
-            nickname varchar(50) not null unique,
-            email    varchar(50) not null unique,
-            password varchar     not null
-        );
-
-        create table matches
-        (
-            idMatch varchar(36) primary key,
-            creationTime varchar(10) not null,
-            creationDate varchar(10) not null
-        );
-
-        create table phrases
-        (
-            idPhrase serial primary key,
-            phrase 	varchar(60) not null unique,
-            theme  	varchar(60) not null
-        );
-
-        create table rounds
-        (
-            roundNumber numeric(1) not null,
-            phrase integer references phrases (idPhrase) not null,
-            idMatch varchar(36) references matches (idMatch) not null,
-            primary key (idMatch, roundNumber)
-        );
-
-        create table moves
-        (
-            idMove   varchar(36) primary key,
-            player   varchar(36) references users (idUser) not null,
-            movetype varchar(10) not null,
-            points  numeric(6)   not null,
-            idMatch varchar(36) not null,
-            roundNumber   numeric(1)  not null,
-            foreign key (idMatch, roundNumber) references rounds
-        );
-
-        create table matchwinners
-        (
-            idMatch  varchar(36) references matches (idMatch) not null,
-            player varchar(36) references users (idUser) not null,
-            score   numeric(6) not null,
-            primary key (idMatch, player)
-        );
-
-        create table roundwinners
-        (
-            idMatch  varchar(36),
-            roundNumber   numeric(1),
-            player varchar(36) references users (idUser),
-            score  numeric(6) not null,
-            foreign key (idMatch, roundNumber) references rounds,
-            primary key (idMatch, roundNumber, player)
-        );
-
-        create table roundparticipants
-        (
-            idMatch varchar(36),
-            roundNumber   numeric(1),
-            participant varchar(36) references users (idUser),
-            isObserver boolean not null,
-            foreign key (idMatch, roundNumber) references rounds,
-            primary key (idMatch, roundNumber, participant)
-        );
+Now, we let Java know what the security policy is through: 
+```ruby
+System.setProperty("java.security.policy","file:/C:/Users/user/Documents/security.policy");
 ```
 
-## Aggiunta di dati alla tabella `phrases`
+I have chosen to put my security file under Documents. Of course, you can put it anywhere you'd want.
 
-```sql
-INSERT INTO phrases VALUES (1, 'un fenomeno di costume', 'La moda dei bikini');
-INSERT INTO phrases VALUES (2, 'il pane di ramerino', 'Specialità toscana');
-INSERT INTO phrases VALUES (3, 'magnetofono', 'Un apparecchio');
-INSERT INTO phrases VALUES (4, 'anche i chili sono a contratto', 'Al moulin rouge');
-INSERT INTO phrases VALUES (5, 'l''uccellino più puntuale', 'Il cucu');
-INSERT INTO phrases VALUES (6, 'il pianeta con piu lune', 'Saturno');
-INSERT INTO phrases VALUES (7, 'Il diacono', 'è un futuro sacerdote');
-INSERT INTO phrases VALUES (8, 'e il simbolo della croce', 'L''albero di natale');
-INSERT INTO phrases VALUES (9, 'lo puoi trovare sul canale quarantesei', 'Cartoonito');
-INSERT INTO phrases VALUES (10, 'vinsero la loro battaglia grazie alla loro foga', 'Le amazzoni');
-INSERT INTO phrases VALUES (11, 'bast era una divinità con la testa da felino ', 'Nell''antico egitto');
-INSERT INTO phrases VALUES (12, 'Francamente me ne infischio', 'Via col vento, 1939');
-INSERT INTO phrases VALUES (13, 'Via col vento', 'Francamente me ne infischio');
-INSERT INTO phrases VALUES (14, 'Il Padrino', 'Gli farò un offerta che non potrà rifiutare');
-INSERT INTO phrases VALUES (15, 'Star Wars', 'Che la Forza sia con te');
-INSERT INTO phrases VALUES (16, 'Taxi driver', 'Ma dici a me');
-INSERT INTO phrases VALUES (17, 'Apocalypse Now', 'Mi piace l odore del napalm al mattino');
-INSERT INTO phrases VALUES (18, 'Il mistero del falco', 'La materia di cui sono fatti i sogni');
-INSERT INTO phrases VALUES (19, 'Lucio Dalla', 'dice ciao al 900');
-INSERT INTO phrases VALUES (20, 'personaggio biblico', 'Giacobbe');
-INSERT INTO phrases VALUES (21, 'Stivali geografici', 'italia arabia nuova zelanda');
-INSERT INTO phrases VALUES (22, 'nel medioevo', 'niente tv solo giullari e trovatori ');
-INSERT INTO phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera');
-```
-
-## Aggiunta di utenti alla tabella `users`
-
-```sql
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 1, 'Amminestratore', 'del Gioco', 'admin', 'admin@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'Tizio', 'tizio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'Caio', 'caio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'Sempronio', 'sempronio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-```
-
-# ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
-
-```console
-utente@computer:~$ cd rdfProject
-utente@computer:rdfProject$ ant server
-```
-
-## Connessione al database 
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen1.png" alt="Create databaseManager" width="400"/>
-
-```text
----------------- database credentials ------------------
-
-username        : postgres
-password        : postgres
-hostname        : localhost
-port            : 5432
----------------------------------------------------------
-```
-
-## Connessione all'indirizzo e-mail del gioco
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen2.png" alt="Create emailManager" width="400"/>
-
-```text
----------------- email credentials ------------------
-
-email           : la_ruota_della_fortuna@outlook.it
-password        : postgres
++ Create the registry
 -----------------------------------------------------
-```
+LocateRegistry.createRegistry(port)
 
-## Accesso amministratore
++ Create the stub (remote reference to your object)
+   We do not let  our object 'Server' extend UnicastRemoteObject(), just that the interface of the remote object should extend Remote.
+   UnicastRemoteObject exports the remote object to a random port and we would like to control which port the remote object is
+   exported to. 
+   Public Class serverInterface extends Remote() {
+   }
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen3.png" alt="Admin SignIn" width="400"/>
+   After creating the registry, we export the server object i.e. we create a remote reference to it. We call it 'stubserver'.
+   ServerInterface stubServer = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
+   The reference contains two identifications of the server object i.e. the host and the port. Printing the remote reference gives...
+   
+   The host might not be very important in the case of the stubserver because it will not travel between machines but for other objects
+   we will see it is very important. To see this, when a remote reference of an object, say 'Match' is sent from the server to the client as a    return value. Once the remote reference stubMatch is received on the client, any invocation of a method of stubMatch will be transferred    to the original object 'Match'. How does 'stubMatch' traces back the original object? It is through the host and the port.
+   
+   + After the object server is exported, i.e., the remote reference 'stubServer' is created, it is time to bind it to the registry and give a name that the client will use to look it up. The name we have chosen it "SERVER".
+	register.rebind("SERVER", stub);
 
-```text
------------- administrator credentials --------------
+The full code for the creation and binding of the server is:
+    	System.setProperty("java.security.policy","file:/C:/Users/Monty/Documents/Dropbox/security.policy");
+    	System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+    	
+    	System.out.println(System.getProperty("java.rmi.server.hostname"));
+	    if (System.getSecurityManager() == null) {
+	    	System.setSecurityManager(new SecurityManager());
+	    }
+	    ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
+		register = LocateRegistry.createRegistry(1099);
+		register.rebind("SERVER", stub);
 
-email           : admin@ruota.it
-password        : ruota
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Accessing the SERVER from a client machine
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.......................................................................
+Security files
+......................................................................
+The client too needs to have security policy file. We use the same file above 'security.policy'.
+System.setProperty("java.security.policy","file:/Users/MG/Desktop/security.sec");
+if (System.getSecurityManager() == null) {
+	System.setSecurityManager(new SecurityManager());
+}
+PS: You might not need to have these policies if you run your program locally (on localhost). However, there are very important
+if you run it over the internet.
+
+.......................................................................................
+Locate the registry and find the server STUB
+------------------------------------------------------
+So that the client finds the registry on the server machine, it needs the public IP address of the server machine. If the server machine has a public IP address then it is the address that we are looking for. If, however, the server machine accesses Internet through the router, then its IP address is different from its public IP address. To set your server when you are behind a router, please see below 'RMI and port forwarding'. Assume that the server has a public IP address '3.17.23.19'. We then need to search for the remote registry at that host address and at the port 1099. We do that using the command registry.getregistry()
+			host = '3.17.23.19';
+			registry = LocateRegistry.getRegistry(host, 1099);
+Once we have found the registry, we just need to look up for the server remote reference serverstub, for which we have given the name "SERVER' above. We do this using:
+			server = (ServerInterface) registry.lookup("SERVER");
+
+Now the client can interact with the server side using the methods of the object server. It is important to remind the reader that the client has an idea about the methods of the remote object 'server' because it has the interface of the object server. 
+
+The full code on the client side:
+System.setProperty("java.security.policy","file:/Users/MG/Desktop/security.sec");
+if (System.getSecurityManager() == null) {
+	System.setSecurityManager(new SecurityManager());
+}
+host = '3.17.23.19';
+registry = LocateRegistry.getRegistry(host, 1099);
+server = (ServerInterface) registry.lookup("SERVER");
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Sending the callback remote reference
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The update of the user graphical interface relies on the object clientManager, which is an object created by the client.
+A remote reference of 'ClientManager' is then sent to the server, which uses it to invoke methods in the original object
+stored in the client. For example, the server might want to inform players that a player has left the game. When the event
+occurs, the server objects can call a method on the clientStubs of the client object for each players in the match. It does so
+by calling clientstub.Notifyleaver(). The method will then be automatically transferred to the original ClientManager object,
+which will show a notification on the client machine. So that the clientstub can trace its way back to the original object, it
+needs to have two pieces of information 'host' and 'port'. You can see here an example of clientstub.
+
+Proxy[ClientManagerInterface,RemoteObjectInvocationHandler[UnicastRef [liveRef: [endpoint:[85.230.100.168:2020](remote),objID:[1efd7e30:172140d00e2:-7ffe, 6986137974138417350]]]]]
+
+In the endpoint, you can see 'endpoint:[85.230.100.168:2020](remote)'. The '' is the public IP address (that can be used to access
+the machine from the Internet and not an local IP given by the router') and '2020' is the port at which the original object 
+'ClientManager' lies. 
+
+The host is again the public IP of the client machine and the port is any port we choose, provided that the server machine accepts TCP transmission on it. Since the client machine has a unique public IP address under one session, we can set the host address to be used
+by all remote reference sent by the client machine; we do this by setting the variable java.rmi.server.hostname equal to the public IP address. Once this is done, all exported remote references will have the same IP address as a host. 
+
+System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+
+This has to be set before (preferably long before) attempting to export the object. Once the rmi server hostname is fixed; we create the clientstub, i.e., the remote reference to the local object 'ClientManager' in the client machine on the port 2020.
+	client = new ClientManager();
+	stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, 2020);
+
+Now, the stubclient is ready to be sent to the server as an argument of a method call of the object 'server'. Once the clientstub is on the server machine, it can be called and the stub will forward all method calls to the original object. For example, we sent the clientstub to the server by calling the method server.creatematch(clientstub). 
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Sending a remote reference from the server to the client
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+It is very similar to sending the callback remote reference. Before exporting any local object, we need to specify the host value that
+the remote reference will have. We do this by setting the server hostname for the RMI to the public IP address of the server machine:
+
+System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+
+One remote reference that the server needs to transfer to the client machines is the remote reference to the object match. The object 'match' runs all aspects of the game itself; but it is at the same time shared by all players that play the game (as well as observers). To be sure that all players modify the state of the same match (the same 'Match' object); they all shall receive a remote reference to the same object 'Match'. The export port can be of your choosing. The creation of match stub is as follows:
+
+	match = new Match();
+	stubMatch = (Match)UnicastRemoteObject.exportObject(match, 999);
+
+While the remote references from the client to the server are sent as method arguements, the remote references send from the server to the client as return values. 
+
+For example; a simplification of our code is:
+
+Client Side:
+	client = new ClientManager();
+	stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, 2020);
+	server.createMatch(stubclient);
+
+Server Side:
+	public Match createMatch(clientManagerInterface client) {
+		match = new Match();
+		match.addplayer(client);
+		stubMatch = (Match)UnicastRemoteObject.exportObject(match, 999);
+		return stubMatch;
+	}
+
+We can see here, how the client and the server have exchanged remote references. The match will be responsible in managing the game while the client will be responsible for updating the user interface. 
+	
+.....................................................................................................................................................................................
+Playing the Game Online
+......................................................................................................................................................................................
+
++ Access of the server on Amazon Web Services
 -----------------------------------------------------
-```
-
-## Server avviato!
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen4.png" alt="Server Running..." width="400"/>
+Both the server and the database are hosted at Amazon Web services. The IP address of the server as well as the credentials
+of the database are included in the runnable JAR client so you should not worry about them. Since the server machine on AWS has a public IP address, sending the object 'match' as a 'matchstub' shall not be any problem. However, the 'clientstub' sent from the client machine to the server could be problematic if the client machine accesses Internet behind a router. For this, the client user should make a port forwarding. The application 'ruota' detects if the client user is behind a router and gives him all details needed to make the port forwarding on the router. 
 
 
-# ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
-
-```console
-utente@computer:~$ cd rdfProject
-utente@computer:rdfProject$ javac playerRdF.java
-utente@computer:rdfProject$ java playerRdF
-```
-
-## Connessione all'host remoto
-
-L'utente annota l'indirizzo del computer remoto. Nel nostro caso, lo è `localhost`.
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen5.png" alt="Connect to Host" width="400"/>
-
-## Accesso giocatore
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen6.png" alt="SignIn Player" width="400"/>
-
-```text
-------------- Player Tizio credentials --------------
-
-email           : tizio@ruota.it
-password        : ruota
++ Access of Game from behind a router.
 -----------------------------------------------------
-```
+Many machines access Internet through a router so they are assigned IP by the router. This IP, however, does not allow them to receive traffic from the internet. For example, if a machine gets an IP address from the router '168.192.1.100', then trying to access this address from the Internet will fail. For example, if you try to host the game server on this machine, and you give that IP address to your clients so that they connect to the registry; they will get a timeout error because the client will not be able to find the machine having that address. The address is local. There is, however, a public address that might lead to your machine, which is the public IP address of the router. However, if you give that address instead to your clients, they will too have a timeout error since the client machines will be trying to find the registry on the router. The router would not know what to do with the request at the port 1099... unless we tell him what to do. This is called port forwarding. We will basically tell the router to direct all traffic coming to the public address at the port 1099 to your machine identified by its local IP address. Most routers have port forwarding capabilities so connect to your router and make the proper port forwarding. In this case, you will be able to receive client requests as a server at the port 1099; or receive server callbacks as a client at the port 2020. 
 
-## Piattaforma di gioco
+The current version of our RuotaDellaFortuna client instructs the client user which port to forward in order to be able to play the game published online. It does it this way:
+ 
+- First find public IP (use code from amazon to find public IP)
+- Find Local IP using InetAddress 
+- Compare both to see if there is a router.
+- Assign a port to the exported callback stub clientManager randomly from 2000 and 2099.
+- Show the port to Client and say that the client should do port forwarding on the router in order to be able to access the game.
+All calls to the port 2000 should be forwarded to the local IP address at the port 2000.
 
-Una volta effettuato l'accesso, viene visualizzata la piattaforma RdFPlatform.
+Assume that the public IP address is '12.12.33.232' and the local IP address '192.168.1.190'. The client would realize that it is behind a router.
+(0) The client picks a port between 2000 and 2099 say '2200'.
+port = rnd():
+(1) It will set first it RMI server hostname to the public IP address:
+System.setProperty("java.rmi.server.hostname", "85.230.100.168");
+(2) It exports the clientstub at the port 2200
+client = new ClientManager();
+stubclient = (ClientManagerInterface)UnicastRemoteObject.exportObject(client, port);
 
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen7.png" alt="Game Platform" width="600"/>
+It will then show the client user a message so it makes the following port forwarding:
+<service name><PortRange><LocalIP><Port><Protocol>
+<Ruota Client><2200><192.168.1.190><2200><TCP>
 
-## Schermata di gioco
-
-Se il giocatore fa clic su `Crea Partita`, viene visualizzata la schermata di gioco.
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen8.png" alt="MatchInterface" width="600"/>
-
-## Iniziare una partita
-
-Ora Tizio ha creato una partita. Usa le seguenti credenziali per accedere a due giocatori aggiuntivi. Nella schermata della piattaforma RDF, fai clic su `+Giocatore` per unirsi alla partita creata da Tizio.
-
-```text
--------------- Player Caio credentials --------------
-
-email           : caio@ruota.it
-password        : ruota
------------------------------------------------------
-```
-
-
-```text
------------ Player Sempronio credentials ------------
-
-email           : sempronio@ruota.it
-password        : ruota
------------------------------------------------------
-```
-
-Una volta che i due giocatori `Caio` e `Sempronio` sono iscritti alla partita creata da Tizio, l'interfaccia partita diventa attivo ed i tre giocatori saranno in grado di giocare.
-
-<img src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/screen9.png" alt="MatchOnGoing" width="600"/>
-
-# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Contributions
-L'attuale progetto è stato realizzato dal seguente team:
-- Project Manager : Mohamed Ghachem
-- Team            : Guilio Delia; Lorris Bruno and Gabriele Sbrò
+If the user makes the aforementioned port forwarding modification, (s)he should be able to access the game at the Amazon Web Services server. 
