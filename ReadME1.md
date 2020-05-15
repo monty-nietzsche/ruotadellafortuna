@@ -10,11 +10,12 @@
 
 # Publishing ruotaDellaFortuna on Amazon Web Services
 
+## Creating the main server and binding it to the registry
 
-## Security files 
+### Security files 
 So that the transfer of the remote references happens without any problems, we need to create security policy files to give
 permissions for remote referencing. We opened an empty text file and wrote the following:
-```java
+```ruby
 grant {
     permission java.security.AllPermission;
 };
@@ -28,25 +29,44 @@ System.setProperty("java.security.policy","file:/C:/Users/user/Documents/securit
 
 I have chosen to put my security file under Documents. Of course, you can put it anywhere you'd want.
 
-+ Create the registry
------------------------------------------------------
+### Create the registry on the server machine
+
+The registry is created on the server machine by invoking the method `LocateRegistry.createRegistry()`. The default port is 1099.
+```ruby
 LocateRegistry.createRegistry(port)
+```
 
-+ Create the stub (remote reference to your object)
-   We do not let  our object 'Server' extend UnicastRemoteObject(), just that the interface of the remote object should extend Remote.
-   UnicastRemoteObject exports the remote object to a random port and we would like to control which port the remote object is
-   exported to. 
-   Public Class serverInterface extends Remote() {
-   }
+### Create the stub (remote reference to your object)
 
-   After creating the registry, we export the server object i.e. we create a remote reference to it. We call it 'stubserver'.
-   ServerInterface stubServer = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
-   The reference contains two identifications of the server object i.e. the host and the port. Printing the remote reference gives...
-   
-   The host might not be very important in the case of the stubserver because it will not travel between machines but for other objects
-   we will see it is very important. To see this, when a remote reference of an object, say 'Match' is sent from the server to the client as a    return value. Once the remote reference stubMatch is received on the client, any invocation of a method of stubMatch will be transferred    to the original object 'Match'. How does 'stubMatch' traces back the original object? It is through the host and the port.
-   
-   + After the object server is exported, i.e., the remote reference 'stubServer' is created, it is time to bind it to the registry and give a name that the client will use to look it up. The name we have chosen it "SERVER".
+We do not let  our object 'Server' extend UnicastRemoteObject(), just that the interface of the remote object should extend Remote.
+UnicastRemoteObject exports the remote object to a random port and we would like to control which port the remote object is
+exported to. We do this for reasons that we will detail later in the document.
+
+```ruby
+Public Class serverInterface extends Remote() {
+}
+```
+
+After creating the registry, we export the server object i.e. we create a remote reference to it. We call it 'stubserver'.
+
+```ruby
+ServerInterface stubServer = (ServerInterface) UnicastRemoteObject.exportObject(server, 1099);
+```
+
+The reference contains two identifications of the server object i.e. the host and the port. Printing the stubServer in the console gives:
+
+```ruby
+Proxy[ServerInterface,RemoteObjectInvocationHandler[UnicastRef [liveRef: [endpoint:[192.168.1.99:1099](local),objID:[-6b787b94:172184911d0:-7fff, -5728301903043910429]]]]]
+```
+
+Here the host is the (local) IP address of the server machine (`192.168.1.99`) and the port is the port at which the object server is accessible (`1099`). 
+
+The host might not be very important in the case of the stubserver because it will not travel between machines but for other objects
+we will see it is very important. To see this, when a remote reference of an object, say 'Match' is sent from the server to the client as a    return value. Once the remote reference stubMatch is received on the client, any invocation of a method of stubMatch will be transferred to the original object 'Match'. How does 'stubMatch' traces back the original object? It is through the host and the port. 
+
+### Binding the server stub to the registry
+After the object server is exported, i.e., the remote reference 'stubServer' is created, it is time to bind it to the registry and give a name that the client will use to look it up. The name we have chosen it "SERVER".
+```
 	register.rebind("SERVER", stub);
 
 The full code for the creation and binding of the server is:
