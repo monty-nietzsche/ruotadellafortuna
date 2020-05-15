@@ -2,8 +2,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 ![Java](https://img.shields.io/badge/java-v8.0-blue.svg)
-![Group work](https://img.shields.io/badge/group%20work-yes-brightgreen.svg)
-![Works online](https://img.shields.io/badge/works%20online-no-red.svg)
+![Works online](https://img.shields.io/badge/works%20online-yes-brightgreen.svg)
 ![RMI](https://img.shields.io/badge/rmi%20technology-yes-brightgreen.svg)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 
