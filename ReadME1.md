@@ -8,7 +8,7 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 
 
-# Publishing ruotaDellaFortuna on Amazon Web Services
+# RMI and Playing ruotaDellaFortuna online
 
 ## Creating the main server and binding it to the registry
 
@@ -197,7 +197,7 @@ The remote reference of the match looks like this:
 ```ruby
 	Match[UnicastServerRef [liveRef: [endpoint:[192.168.1.123:62791](local),objID:[-74ba1f08:17218b707bb:-7ff4, -118223242358496863]]]]
 ```
-# Exchange between the server and the client:
+## Exchange between the server and the client:
 
 While the remote references from the client to the server are sent as method arguements, the remote references send from the server to the client as return values. 
 
@@ -229,15 +229,15 @@ The server receives the method call and forwards it to the method `createMatch` 
 
 __We can see here, how the client and the server have exchanged remote references. The match will be responsible in managing the game while the client will be responsible for updating the user interface.__**
 	
-# Playing the game online:
+## Playing the game online:
 
-## Access of the server on Amazon Web Services
+### Access of the server on Amazon Web Services
 
 Both the server and the database are hosted at Amazon Web services. The IP address of the server as well as the credentials
 of the database are included in the runnable JAR client so you should not worry about them. Since the server machine on AWS has a public IP address, sending the remote reference of an object of type 'Match' shall not cause any problem. However, the remote reference 'stubClient' sent from the client machine to the server could be problematic if the client machine accesses Internet behind a router. For this, the client user should make a port forwarding. The application 'ruota' detects if the client user is behind a router and gives him all details needed to make the port forwarding on the router. 
 
 
-## RMI and port forwarding  - Access of Game from behind a router
+### RMI and port forwarding  - Access of Game from behind a router
 
 Many machines access Internet through a router so they are assigned IP by the router. This IP, however, does not allow them to receive traffic from the internet. For example, if a machine gets an IP address from the router `168.192.1.100`, then trying to access this address from the Internet will fail. For example, if you try to host the game server on this machine, and you give that IP address to your clients so that they connect to the registry; they will get a timeout error because the client will not be able to find the machine having that address. The address is local. There is, however, a public IP address that might lead to your machine, which is the public IP address of the router. However, if you give that address instead to your clients, they will too have a timeout error since the client machines will be trying to find the registry on the router. The router would not know what to do with the request at the port 1099... unless you tell him what to do. This is called port forwarding. We will basically tell the router to direct all traffic coming to the public address at the port 1099 to your machine identified by its local IP address. Most routers have port forwarding capabilities so connect to your router and make the proper port forwarding. In this case, you will be able to receive client requests as a server at the port 1099; or receive server callbacks as a client at the port 2020. 
 
