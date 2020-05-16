@@ -27,6 +27,87 @@ qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o
 Ant converte tutto nella forma più appropriata alla piattaforma corrente. I comandi da noi utilizzati per avviare WOF, presenti 
 nel nostro `build.xml`. 
 
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="RDF Client">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../Desktop/Eclipse.app/Contents/Eclipse/"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="RDF Client.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="jar/opencsv-4.0.jar"/>
+        <pathelement location="serverExternal.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.ucls"/>
+                <exclude name="**/*.useq"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir=".">
+                <exclude name="**/*.ucls"/>
+                <exclude name="**/*.useq"/>
+                <exclude name="**/*.java"/>
+                <exclude name="src/"/>
+                <exclude name="jar/"/>
+                <exclude name="serverExternal/"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="."/>
+            <exclude name="src/"/>
+            <exclude name="jar/"/>
+            <exclude name="serverExternal/"/>
+            <classpath refid="RDF Client.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="AdminRdf">
+        <java classname="userRDF.AdminRdf" failonerror="true" fork="yes">
+            <classpath refid="RDF Client.classpath"/>
+        </java>
+    </target>
+    <target name="PlayerRdf">
+        <java classname="userRDF.PlayerRdf" failonerror="true" fork="yes">
+            <classpath refid="RDF Client.classpath"/>
+        </java>
+    </target>
+</project>
+```
+
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
 
 Dovrebbe esserci un database Postgres chiamato in `WOF` esecuzione sul localhost alla porta `5432`.
