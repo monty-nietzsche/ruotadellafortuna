@@ -8,7 +8,7 @@
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 
 
-## Panoramica
+# Panoramica
 
 Inizialmente, non avevamo completato in tempo la fase di “build automation”, a causa principalmente dell’inesperienza 
 nell’utilizzo di Maven. Quindi, benchè questa fase non fosse fondamentale, in fase di consegna avevamo specificato che l’esecuzione
@@ -17,7 +17,7 @@ modo tale da poter avviare il programma a linea di comando, ci siamo rimessi sui
 automation con Ant, riuscendo a far partire il programma tramite questo strumento. Abbiamo utilizzato Ant perché, a nostro avviso,
 ha una gestione complessiva più semplice, anche in fase di portabilità, che ci ha permesso, appunto, di raggiungere l’obiettivo.
 
-## Apache Ant
+# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)  Apache Ant
 Apache Ant è un software per l'automazione del processo di build. È simile a make, ma scritto in Java ed è principalmente orientato
 allo sviluppo in Java. Ant è un progetto Apache, open source, ed è distribuito sotto licenza Apache. Esso si basa su script in
 formato xml. Ogni build file definisce un project composto da target in cui sono elencati i task, le istruzioni da eseguire.
