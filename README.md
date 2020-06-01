@@ -1,82 +1,28 @@
-<img style="text-align:center" src="https://raw.githubusercontent.com/monty-nietzsche/ruotadellafortuna/master/images/logo.png" alt="Create databaseManager" width="400"/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-![Java](https://img.shields.io/badge/java-v8.0-blue.svg)
-![Group work](https://img.shields.io/badge/group%20work-yes-brightgreen.svg)
-![Works online](https://img.shields.io/badge/works%20online-no-red.svg)
-![RMI](https://img.shields.io/badge/rmi%20technology-yes-brightgreen.svg)
-![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
+<h1 align="center"> RUOTA DELLA FORTUNA </h1>
 
 
 # Panoramica
 
-Inizialmente, non avevamo completato in tempo la fase di “build automation”, a causa principalmente dell’inesperienza 
-nell’utilizzo di Maven. Quindi, benchè questa fase non fosse fondamentale, in fase di consegna avevamo specificato che l’esecuzione
-del programma dovesse avvenire attraverso Eclipse. Successivamente, essendo stata data la possibilità di completare questa parte in
-modo tale da poter avviare il programma a linea di comando, ci siamo rimessi sui nostri passi, ed abbiamo sviluppato la build 
-automation con Ant, riuscendo a far partire il programma tramite questo strumento. Abbiamo utilizzato Ant perché, a nostro avviso,
-ha una gestione complessiva più semplice, anche in fase di portabilità, che ci ha permesso, appunto, di raggiungere l’obiettivo.
+Inizialmente, non avevamo completato in tempo la fase di “build automation”, a causa
+principalmente dell’inesperienza nell’utilizzo di Maven. Quindi, benchè questa fase non fosse
+fondamentale, in fase di consegna avevamo specificato che l’esecuzione del programma dovesse
+avvenire attraverso Eclipse. Successivamente, essendo stata data la possibilità di completare questa
+parte in modo tale da poter avviare il programma a linea di comando, ci siamo rimessi sui nostri
+passi, ed abbiamo sviluppato la build automation con Ant, riuscendo a far partire il programma
+tramite questo strumento. Abbiamo utilizzato Ant perché, a nostro avviso, ha una gestione
+complessiva più semplice, anche in fase di portabilità, che ci ha permesso, appunto, di raggiungere
+l’obiettivo.
 
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)  Apache Ant
-Apache Ant è un software per l'automazione del processo di build. È simile a make, ma scritto in Java ed è principalmente orientato
-allo sviluppo in Java. Ant è un progetto Apache, open source, ed è distribuito sotto licenza Apache. Esso si basa su script in
-formato xml. Ogni build file definisce un project composto da target in cui sono elencati i task, le istruzioni da eseguire.
-Nel progetto possono essere definite delle properties, coppie nome e valore immodificabili nel resto del progetto. I target 
-possono avere delle dipendenze da altri target. La sintassi ant lascia libero l'autore del codice di usare una convenzione 
-qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o :) per i separatori dei path (classpath). 
-Ant converte tutto nella forma più appropriata alla piattaforma corrente. I comandi da noi utilizzati per avviare WOF, presenti 
-nel nostro `build.xml`. 
-
-```xml
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="RDFServer">
-    <property environment="env"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="13"/>
-    <property name="source" value="13"/>
-    <path id="RDFServer.classpath">
-        <pathelement location="bin"/>
-        <pathelement location="jar/activation-1.1.jar"/>
-        <pathelement location="jar/javax.mail.jar"/>
-        <pathelement location="jar/opencsv-4.0.jar"/>
-        <pathelement location="jar/postgresql-42.2.8.jar"/>
-    </path>
-    <path id="run.ServerRdf.classpath">
-        <path refid="RDFServer.classpath"/>
-        <pathelement location="jar/activation-1.1.jar"/>
-        <pathelement location="jar/javax.mail.jar"/>
-        <pathelement location="jar/opencsv-4.0.jar"/>
-        <pathelement location="jar/postgresql-42.2.8.jar"/>
-    </path>
-    <target name="init">
-        <mkdir dir="bin"/>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    </target>
-    <target name="clean">
-        <delete dir="bin"/>
-    </target>
-    <target depends="clean" name="cleanall"/>
-    <target depends="build-subprojects,build-project" name="build"/>
-    <target name="build-subprojects"/>
-    <target depends="init" name="build-project">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
-            <src path="src"/>
-            <classpath refid="RDFServer.classpath"/>
-        </javac>
-    </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target name="ServerRdf">
-        <java classname="serverInterface.ServerRdf" failonerror="true" fork="yes">
-            <classpath refid="run.ServerRdf.classpath"/>
-        </java>
-    </target>
-</project>
-```
+Apache Ant è un software per l’automazione del processo di build. È simile a make, ma scritto in Java
+ed è principalmente orientato allo sviluppo in Java. Ant è un progetto Apache, open source, ed è
+distribuito sotto licenza Apache. Esso si basa su script in formato xml. Ogni build file definisce un
+project composto da target in cui sono elencati i task, le istruzioni da eseguire. Nel progetto possono
+essere definite delle properties, coppie nome e valore immodificabili nel resto del progetto. I target
+possono avere delle dipendenze da altri target. La sintassi ant lascia libero l’autore del codice di usare
+una convenzione qualsiasi, back/forward slash per le directory, punto e virgola o due punti (; o :)
+per i separatori dei path (classpath). Ant converte tutto nella forma più appropriata alla piattaforma
+corrente. I comandi da noi utilizzati per avviare WOF, presenti nel nostro `build.xml`. 
 
 # ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
 
@@ -146,7 +92,6 @@ L'utente annota l'indirizzo del computer remoto. Nel nostro caso, lo è `localho
 
 ```text
 ------------- Player Tizio credentials --------------
-
 email           : tizio@ruota.it
 password        : ruota
 -----------------------------------------------------
