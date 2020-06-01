@@ -29,38 +29,30 @@ nel nostro `build.xml`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="RDF Client">
+<project basedir="." default="build" name="RDFServer">
     <property environment="env"/>
-    <property name="ECLIPSE_HOME" value="../../../../Desktop/Eclipse.app/Contents/Eclipse/"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
-    <path id="RDF Client.classpath">
+    <property name="target" value="13"/>
+    <property name="source" value="13"/>
+    <path id="RDFServer.classpath">
         <pathelement location="bin"/>
+        <pathelement location="jar/activation-1.1.jar"/>
+        <pathelement location="jar/javax.mail.jar"/>
         <pathelement location="jar/opencsv-4.0.jar"/>
-        <pathelement location="serverExternal.jar"/>
+        <pathelement location="jar/postgresql-42.2.8.jar"/>
+    </path>
+    <path id="run.ServerRdf.classpath">
+        <path refid="RDFServer.classpath"/>
+        <pathelement location="jar/activation-1.1.jar"/>
+        <pathelement location="jar/javax.mail.jar"/>
+        <pathelement location="jar/opencsv-4.0.jar"/>
+        <pathelement location="jar/postgresql-42.2.8.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
-                <exclude name="**/*.ucls"/>
-                <exclude name="**/*.useq"/>
                 <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir=".">
-                <exclude name="**/*.ucls"/>
-                <exclude name="**/*.useq"/>
-                <exclude name="**/*.java"/>
-                <exclude name="src/"/>
-                <exclude name="jar/"/>
-                <exclude name="serverExternal/"/>
             </fileset>
         </copy>
     </target>
@@ -74,164 +66,24 @@ nel nostro `build.xml`.
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <src path="."/>
-            <exclude name="src/"/>
-            <exclude name="jar/"/>
-            <exclude name="serverExternal/"/>
-            <classpath refid="RDF Client.classpath"/>
+            <classpath refid="RDFServer.classpath"/>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
-    </target>
-    <target name="AdminRdf">
-        <java classname="userRDF.AdminRdf" failonerror="true" fork="yes">
-            <classpath refid="RDF Client.classpath"/>
-        </java>
-    </target>
-    <target name="PlayerRdf">
-        <java classname="userRDF.PlayerRdf" failonerror="true" fork="yes">
-            <classpath refid="RDF Client.classpath"/>
+    <target name="ServerRdf">
+        <java classname="serverInterface.ServerRdf" failonerror="true" fork="yes">
+            <classpath refid="run.ServerRdf.classpath"/>
         </java>
     </target>
 </project>
 ```
 
-# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Database WOF
-
-Dovrebbe esserci un database Postgres chiamato in `WOF` esecuzione sul localhost alla porta `5432`.
-
-## Creazione delle tabelle del database
-
-Il codice per la creazione della tabella necessaria per il database è il seguente:
-
-``` sql
-        create table users
-        (
-            idUser   varchar(36) primary key,
-            isAdmin  numeric(1)  not null,
-            name     varchar(50) not null,
-            surname  varchar(50) not null,
-            nickname varchar(50) not null unique,
-            email    varchar(50) not null unique,
-            password varchar     not null
-        );
-
-        create table matches
-        (
-            idMatch varchar(36) primary key,
-            creationTime varchar(10) not null,
-            creationDate varchar(10) not null
-        );
-
-        create table phrases
-        (
-            idPhrase serial primary key,
-            phrase 	varchar(60) not null unique,
-            theme  	varchar(60) not null
-        );
-
-        create table rounds
-        (
-            roundNumber numeric(1) not null,
-            phrase integer references phrases (idPhrase) not null,
-            idMatch varchar(36) references matches (idMatch) not null,
-            primary key (idMatch, roundNumber)
-        );
-
-        create table moves
-        (
-            idMove   varchar(36) primary key,
-            player   varchar(36) references users (idUser) not null,
-            movetype varchar(10) not null,
-            points  numeric(6)   not null,
-            idMatch varchar(36) not null,
-            roundNumber   numeric(1)  not null,
-            foreign key (idMatch, roundNumber) references rounds
-        );
-
-        create table matchwinners
-        (
-            idMatch  varchar(36) references matches (idMatch) not null,
-            player varchar(36) references users (idUser) not null,
-            score   numeric(6) not null,
-            primary key (idMatch, player)
-        );
-
-        create table roundwinners
-        (
-            idMatch  varchar(36),
-            roundNumber   numeric(1),
-            player varchar(36) references users (idUser),
-            score  numeric(6) not null,
-            foreign key (idMatch, roundNumber) references rounds,
-            primary key (idMatch, roundNumber, player)
-        );
-
-        create table roundparticipants
-        (
-            idMatch varchar(36),
-            roundNumber   numeric(1),
-            participant varchar(36) references users (idUser),
-            isObserver boolean not null,
-            foreign key (idMatch, roundNumber) references rounds,
-            primary key (idMatch, roundNumber, participant)
-        );
-```
-
-## Aggiunta di dati alla tabella `phrases`
-
-```sql
-INSERT INTO phrases VALUES (1, 'un fenomeno di costume', 'La moda dei bikini');
-INSERT INTO phrases VALUES (2, 'il pane di ramerino', 'Specialità toscana');
-INSERT INTO phrases VALUES (3, 'magnetofono', 'Un apparecchio');
-INSERT INTO phrases VALUES (4, 'anche i chili sono a contratto', 'Al moulin rouge');
-INSERT INTO phrases VALUES (5, 'l''uccellino più puntuale', 'Il cucu');
-INSERT INTO phrases VALUES (6, 'il pianeta con piu lune', 'Saturno');
-INSERT INTO phrases VALUES (7, 'Il diacono', 'è un futuro sacerdote');
-INSERT INTO phrases VALUES (8, 'e il simbolo della croce', 'L''albero di natale');
-INSERT INTO phrases VALUES (9, 'lo puoi trovare sul canale quarantesei', 'Cartoonito');
-INSERT INTO phrases VALUES (10, 'vinsero la loro battaglia grazie alla loro foga', 'Le amazzoni');
-INSERT INTO phrases VALUES (11, 'bast era una divinità con la testa da felino ', 'Nell''antico egitto');
-INSERT INTO phrases VALUES (12, 'Francamente me ne infischio', 'Via col vento, 1939');
-INSERT INTO phrases VALUES (13, 'Via col vento', 'Francamente me ne infischio');
-INSERT INTO phrases VALUES (14, 'Il Padrino', 'Gli farò un offerta che non potrà rifiutare');
-INSERT INTO phrases VALUES (15, 'Star Wars', 'Che la Forza sia con te');
-INSERT INTO phrases VALUES (16, 'Taxi driver', 'Ma dici a me');
-INSERT INTO phrases VALUES (17, 'Apocalypse Now', 'Mi piace l odore del napalm al mattino');
-INSERT INTO phrases VALUES (18, 'Il mistero del falco', 'La materia di cui sono fatti i sogni');
-INSERT INTO phrases VALUES (19, 'Lucio Dalla', 'dice ciao al 900');
-INSERT INTO phrases VALUES (20, 'personaggio biblico', 'Giacobbe');
-INSERT INTO phrases VALUES (21, 'Stivali geografici', 'italia arabia nuova zelanda');
-INSERT INTO phrases VALUES (22, 'nel medioevo', 'niente tv solo giullari e trovatori ');
-INSERT INTO phrases VALUES (23, 'tom e jerry', 'eroi di hanna e barbera');
-```
-
-## Aggiunta di utenti alla tabella `users`
-
-```sql
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 1, 'Amminestratore', 'del Gioco', 'admin', 'admin@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Tizio', 'Baggio', 'Tizio', 'tizio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Caio', 'Baggio', 'Caio', 'caio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-INSERT INTO users VALUES ('ce24665b-be73-4c1d-b541-e3f9830422b7', 0, 'Sempronio', 'Baggio', 'Sempronio', 'sempronio@ruota.it', '2bd01c7bb1d53e454cb7e866c1ba5764');
-```
-
 # ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) Avvio del modulo per il Server
 
 ```console
-utente@computer:~$ cd rdfProject
-utente@computer:rdfProject$ ant server
+utente@computer:~$ cd RDFServer
+utente@computer: RDFServer$ ant build
+utente@computer: RDFServer$ ant ServerRdf
 ```
 
 ## Connessione al database 
@@ -240,7 +92,6 @@ utente@computer:rdfProject$ ant server
 
 ```text
 ---------------- database credentials ------------------
-
 username        : postgres
 password        : postgres
 hostname        : localhost
@@ -254,7 +105,6 @@ port            : 5432
 
 ```text
 ---------------- email credentials ------------------
-
 email           : la_ruota_della_fortuna@outlook.it
 password        : postgres
 -----------------------------------------------------
@@ -266,7 +116,6 @@ password        : postgres
 
 ```text
 ------------ administrator credentials --------------
-
 email           : admin@ruota.it
 password        : ruota
 -----------------------------------------------------
@@ -280,9 +129,9 @@ password        : ruota
 # ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+)  Avvio Modulo per Utente
 
 ```console
-utente@computer:~$ cd rdfProject
-utente@computer:rdfProject$ javac playerRdF.java
-utente@computer:rdfProject$ java playerRdF
+utente@computer:~$ cd RDFClient
+utente@computer: RDFClient$ ant build
+utente@computer: RDFClient $ ant PlayerRdf
 ```
 
 ## Connessione all'host remoto
@@ -321,7 +170,6 @@ Ora Tizio ha creato una partita. Usa le seguenti credenziali per accedere a due 
 
 ```text
 -------------- Player Caio credentials --------------
-
 email           : caio@ruota.it
 password        : ruota
 -----------------------------------------------------
@@ -330,7 +178,6 @@ password        : ruota
 
 ```text
 ----------- Player Sempronio credentials ------------
-
 email           : sempronio@ruota.it
 password        : ruota
 -----------------------------------------------------
